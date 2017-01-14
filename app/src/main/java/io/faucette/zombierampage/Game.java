@@ -2,6 +2,7 @@ package io.faucette.zombierampage;
 
 
 import io.faucette.camera_component.Camera;
+import io.faucette.math.Vec2;
 import io.faucette.scene_graph.Entity;
 import io.faucette.scene_graph.Scene;
 import io.faucette.sprite_component.Sprite;
@@ -22,18 +23,10 @@ public class Game {
 
         scene.addPlugin(new InputPlugin());
 
-        scene.addEntity(new Entity()
-                .addComponent(new Camera())
-                .addComponent(new Transform2D()));
-
-        scene.addEntity(new Entity()
-                .addComponent(new Transform2D())
-                .addComponent(new PlayerControl())
-                .addComponent(new Sprite()
-                        .setWidth(0.25f)
-                        .setHeight(0.25f)
-                        .setH(0.125f)
-                        .setImage(R.drawable.arrows)));
+        scene.addEntity(Entities.createCamera());
+        scene.addEntity(Entities.createPlayer());
+        scene.addEntity(Entities.createAnalog(AnalogControl.Side.Left));
+        scene.addEntity(Entities.createAnalog(AnalogControl.Side.Right));
 
         setScene(scene);
     }
@@ -44,7 +37,6 @@ public class Game {
         }
 
         scene = s;
-        scene.init();
     }
 
     public void init() {

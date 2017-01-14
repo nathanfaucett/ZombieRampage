@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import io.faucette.math.Mathf;
 import io.faucette.math.Vec2;
 import io.faucette.scene_graph.Plugin;
 
@@ -20,11 +21,13 @@ public class InputPlugin extends Plugin {
 
     public class Touch {
         private int id;
+        private boolean active;
         public Vec2 delta;
         public Vec2 position;
 
         public Touch(int id) {
             this.id = id;
+            active = false;
             delta = new Vec2();
             position = new Vec2();
         }
@@ -39,6 +42,9 @@ public class InputPlugin extends Plugin {
         super();
 
         touches = new ArrayList<>();
+        touches.add(new Touch(0));
+        touches.add(new Touch(1));
+
         width = 960f;
         height = 640f;
     }
@@ -55,79 +61,78 @@ public class InputPlugin extends Plugin {
         this.height = height;
     }
 
-    public synchronized Iterable<Touch> getTouches() {
-        return new ArrayList<>(touches);
+    public Iterable<Touch> getTouches() {
+        List<Touch> activeTouches = new ArrayList<>();
+
+        synchronized (touches) {
+            for (Touch touch : touches) {
+                if (touch.active) {
+                    activeTouches.add(touch);
+                }
+            }
+        }
+
+        return activeTouches;
     }
 
-    public synchronized Touch getTouch(int index) {
-        if (index < touches.size()) {
-            return touches.get(index);
-        } else {
-            return null;
+    public Touch getTouch(int index) {
+        synchronized (touches){
+            if (index < touches.size()) {
+                Touch touch = touches.get(index);
+
+                if (touch.active) {
+                    return touch;
+                } else {
+                    return null;
+                }
+            } else {
+                return null;
+            }
         }
     }
     public Touch getTouch() {
         return getTouch(0);
     }
 
-    public synchronized boolean hasTouch() {
-        return touches.size() != 0;
-    }
-
-    private synchronized Touch findTouch(int id) {
-        for (Touch touch: touches) {
-            if (touch.id == id) {
-                return touch;
-            }
-        }
-        return null;
-    }
-    private synchronized void removeTouch(int id) {
-        Iterator<Touch> it = touches.iterator();
-
-        while (it.hasNext()) {
-            Touch touch = it.next();
-
-            if (touch.id == id) {
-                it.remove();
-            }
-        }
-    }
-
     public boolean onTouchEvent(GameView gameView, MotionEvent e) {
-        int pointerIndex = e.getActionIndex();
-        int pointerId = e.getPointerId(pointerIndex);
-        int maskedAction = e.getActionMasked();
+        synchronized (touches) {
+            int count = Mathf.clamp(e.getPointerCount(), 0, 2);
 
-        switch (maskedAction) {
-            case MotionEvent.ACTION_DOWN:
-            case MotionEvent.ACTION_POINTER_DOWN: {
-                Touch touch = new Touch(pointerId);
-                touch.position.x = e.getX(pointerIndex);
-                touch.position.y = e.getY(pointerIndex);
-                touches.add(touch);
-                break;
-            }
-            case MotionEvent.ACTION_MOVE: {
-                Touch touch = findTouch(pointerId);
-                if (touch != null) {
-                    float x = touch.position.x;
-                    float y = touch.position.y;
-                    touch.position.x = e.getX(pointerIndex);
-                    touch.position.y = e.getY(pointerIndex);
-                    touch.delta.x = touch.position.x - x;
-                    touch.delta.y = touch.position.y - y;
+            for (int i = 0; i < count; i++) {
+                int pointerIndex = i;
+
+                switch (e.getAction() & MotionEvent.ACTION_MASK) {
+                    case MotionEvent.ACTION_DOWN:
+                    case MotionEvent.ACTION_POINTER_DOWN: {
+                        Touch touch = touches.get(pointerIndex);
+                        touch.active = true;
+                        touch.position.x = e.getX(pointerIndex);
+                        touch.position.y = e.getY(pointerIndex);
+                        touch.delta.x = 0f;
+                        touch.delta.y = 0f;
+                        touches.add(touch);
+                        break;
+                    }
+                    case MotionEvent.ACTION_MOVE: {
+                        Touch touch = touches.get(pointerIndex);
+                        float x = touch.position.x;
+                        float y = touch.position.y;
+                        touch.position.x = e.getX(pointerIndex);
+                        touch.position.y = e.getY(pointerIndex);
+                        touch.delta.x = touch.position.x - x;
+                        touch.delta.y = touch.position.y - y;
+                        break;
+                    }
+                    case MotionEvent.ACTION_UP:
+                    case MotionEvent.ACTION_POINTER_UP:
+                    case MotionEvent.ACTION_CANCEL: {
+                        Touch touch = touches.get(pointerIndex);
+                        touch.active = false;
+                        break;
+                    }
                 }
-                break;
-            }
-            case MotionEvent.ACTION_UP:
-            case MotionEvent.ACTION_POINTER_UP:
-            case MotionEvent.ACTION_CANCEL: {
-                removeTouch(pointerId);
-                break;
             }
         }
-
         return true;
     }
 }

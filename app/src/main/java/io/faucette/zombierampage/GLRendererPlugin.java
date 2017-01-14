@@ -10,6 +10,7 @@ import android.util.Log;
 
 import io.faucette.camera_component.CameraManager;
 import io.faucette.math.Mat32;
+import io.faucette.math.Vec4;
 import io.faucette.scene_renderer.RendererPlugin;
 
 
@@ -33,13 +34,21 @@ public class GLRendererPlugin extends RendererPlugin {
     public GLRendererPlugin init() {
         GLES20.glEnable(GLES20.GL_BLEND);
         GLES20.glBlendFunc(GLES20.GL_ONE, GLES20.GL_ONE_MINUS_SRC_ALPHA);
-        GLES20.glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
+        GLES20.glClearColor(0f, 0f, 0f, 1f);
         return this;
     }
 
     @Override
     public GLRendererPlugin before() {
+        Vec4 background = getSceneRenderer()
+                .getScene()
+                .getComponentManager(CameraManager.class)
+                .getActiveCamera()
+                .getBackground();
+
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
+        GLES20.glClearColor(background.x, background.y, background.z, background.w);
+
         return this;
     }
 

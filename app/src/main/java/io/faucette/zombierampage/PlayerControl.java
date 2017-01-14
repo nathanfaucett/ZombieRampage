@@ -1,5 +1,6 @@
 package io.faucette.zombierampage;
 
+import io.faucette.math.Mathf;
 import io.faucette.math.Vec2;
 import io.faucette.scene_graph.Component;
 import io.faucette.scene_graph.Entity;
@@ -8,8 +9,12 @@ import io.faucette.transform_components.Transform2D;
 
 
 public class PlayerControl extends Component {
-    private Vec2 velocity = new Vec2();
-    private Vec2 delta = new Vec2();
+    private Vec2 vel = new Vec2();
+    private Vec2 dir = new Vec2();
+    private Mathf.Direction direction = Mathf.Direction.UP;
+    private float speed = 1.5f;
+
+    private static float MIN_SPEED = 0.01f;
 
 
     public PlayerControl() {
@@ -20,14 +25,55 @@ public class PlayerControl extends Component {
     public PlayerControl update() {
         Entity entity = getEntity();
         Scene scene = entity.getScene();
-        InputPlugin input = scene.getPlugin(InputPlugin.class);
-        InputPlugin.Touch touch = input.getTouch();
+        AnalogControl leftAnalog = scene.getEntity("left_analog").getComponent(AnalogControl.class);
+        AnalogControl rightAnalog = scene.getEntity("right_analog").getComponent(AnalogControl.class);
 
-        if (touch != null) {
-            Transform2D transform = entity.getComponent(Transform2D.class);
-            delta.x = touch.delta.x * 0.25f;
-            delta.y = -touch.delta.y * 0.25f;
-            transform.translate(Vec2.smul(velocity, delta, (float) scene.getTime().getDelta()));
+        Transform2D transform = entity.getComponent(Transform2D.class);
+        Vec2.smul(vel, leftAnalog.analog, speed * (float) scene.getTime().getDelta());
+        transform.translate(vel);
+        float velLength = vel.length();
+
+        if (rightAnalog.analog.length() > MIN_SPEED) {
+            Vec2.normalize(dir, rightAnalog.analog);
+            direction = Mathf.direction(dir.x, dir.y);
+        } else if (velLength > MIN_SPEED) {
+            Vec2.normalize(dir, vel);
+            direction = Mathf.direction(dir.x, dir.y);
+        }
+
+        SpriteAnimation spriteAnimation = entity.getComponent(SpriteAnimation.class);
+
+        if (velLength > 0f) {
+            spriteAnimation.setSpeed(0.0025f / velLength);
+        } else {
+            spriteAnimation.setSpeed(2f);
+        }
+
+        switch (direction) {
+            case RIGHT:
+                spriteAnimation.play("right");
+                break;
+            case UP_RIGHT:
+                spriteAnimation.play("up_right");
+                break;
+            case UP:
+                spriteAnimation.play("up");
+                break;
+            case UP_LEFT:
+                spriteAnimation.play("up_left");
+                break;
+            case LEFT:
+                spriteAnimation.play("left");
+                break;
+            case DOWN_LEFT:
+                spriteAnimation.play("down_left");
+                break;
+            case DOWN:
+                spriteAnimation.play("down");
+                break;
+            case DOWN_RIGHT:
+                spriteAnimation.play("down_right");
+                break;
         }
 
         return this;

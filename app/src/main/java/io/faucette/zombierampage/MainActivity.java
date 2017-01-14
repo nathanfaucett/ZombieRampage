@@ -13,6 +13,8 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        Entities.initAnimations();
+
         gameView = new GameView(this);
         setContentView(gameView);
     }
