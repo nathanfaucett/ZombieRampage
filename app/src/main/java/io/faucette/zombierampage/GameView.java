@@ -3,10 +3,11 @@ package io.faucette.zombierampage;
 
 import android.content.Context;
 import android.opengl.GLSurfaceView;
+import android.view.MotionEvent;
 
 
 public class GameView extends GLSurfaceView {
-    private GLRenderer renderer;
+    public GLRenderer renderer;
 
 
     public GameView(Context context) {
@@ -17,5 +18,10 @@ public class GameView extends GLSurfaceView {
 
         renderer = new GLRenderer(context);
         setRenderer(renderer);
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent e) {
+        return renderer.game.scene.getPlugin(InputPlugin.class).onTouchEvent(this, e);
     }
 }

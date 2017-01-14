@@ -12,7 +12,8 @@ import io.faucette.scene_renderer.SceneRenderer;
 
 
 public class GLRenderer implements GLSurfaceView.Renderer {
-    private Game game;
+    public Game game;
+
     private SceneRenderer sceneRenderer;
     private Context context;
 
@@ -46,6 +47,7 @@ public class GLRenderer implements GLSurfaceView.Renderer {
     }
 
     public void onSurfaceChanged(GL10 unused, int width, int height) {
+        game.scene.getPlugin(InputPlugin.class).setDimensions((float) width, (float) height);
         sceneRenderer.getRendererPlugin(GLRendererPlugin.class).set(width, height);
     }
 }

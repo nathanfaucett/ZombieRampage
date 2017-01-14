@@ -15,21 +15,25 @@ public class Game {
     private boolean playing;
 
     public Scene scene = null;
-    private Transform2D transform2D;
 
 
     public Game() {
         Scene scene = new Scene();
 
+        scene.addPlugin(new InputPlugin());
+
         scene.addEntity(new Entity()
                 .addComponent(new Camera())
                 .addComponent(new Transform2D()));
 
-        transform2D = new Transform2D();
-
         scene.addEntity(new Entity()
-                .addComponent(transform2D)
-                .addComponent(new Sprite().setImage(R.drawable.arrows)));
+                .addComponent(new Transform2D())
+                .addComponent(new PlayerControl())
+                .addComponent(new Sprite()
+                        .setWidth(0.25f)
+                        .setHeight(0.25f)
+                        .setH(0.125f)
+                        .setImage(R.drawable.arrows)));
 
         setScene(scene);
     }
@@ -48,10 +52,6 @@ public class Game {
     }
 
     public void update() {
-
         scene.update();
-
-        transform2D.getLocalPosition().x = (float) Math.cos(scene.getTime().getCurrent()) * 2f;
-        transform2D.setNeedsUpdate();
     }
 }

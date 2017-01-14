@@ -8,7 +8,6 @@ import android.opengl.GLES20;
 import android.opengl.GLUtils;
 import android.util.Log;
 
-import io.faucette.camera_component.Camera;
 import io.faucette.camera_component.CameraManager;
 import io.faucette.math.Mat32;
 import io.faucette.scene_renderer.RendererPlugin;

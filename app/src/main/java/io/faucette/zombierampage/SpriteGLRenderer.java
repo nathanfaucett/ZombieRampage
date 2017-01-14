@@ -45,12 +45,13 @@ public class SpriteGLRenderer extends Renderer {
 
             "uniform mat4 projection;" +
             "uniform mat4 modelView;" +
+            "uniform vec2 size;" +
 
             "varying vec2 vUv;" +
 
             "void main() {" +
-            "  vUv = vec2(1.0 - uv.x, 1.0 - uv.y);" +
-            "  gl_Position = projection * modelView * vec4(position, 0.0, 1.0);" +
+            "  vUv = vec2(uv.x, 1.0 - uv.y);" +
+            "  gl_Position = projection * modelView * vec4(size * position, 0.0, 1.0);" +
             "}";
 
     private static final String fragmentSrc =
@@ -69,7 +70,8 @@ public class SpriteGLRenderer extends Renderer {
 
     private float[] projectoionData = new float[16];
     private float[] modelViewData = new float[16];
-    private float[] clippingData = new float[] { 0f, 0f, 1f, 0.125f};
+    private float[] clippingData = new float[] { 0f, 0f, 1f, 1f};
+    private float[] sizeData = new float[] { 1f, 1f};
     private Mat32 modelView = new Mat32();
 
     private Context context;
@@ -162,13 +164,14 @@ public class SpriteGLRenderer extends Renderer {
 
         int projectionHandle = GLES20.glGetUniformLocation(program, "projection");
         int viewHandle = GLES20.glGetUniformLocation(program, "modelView");
+        int sizeHandle = GLES20.glGetUniformLocation(program, "size");
         int clippingHandle = GLES20.glGetUniformLocation(program, "clipping");
 
 
         while (it.hasNext()) {
             Sprite sprite = it.next();
             Transform2D transform2D = sprite.getEntity().getComponent(Transform2D.class);
-            renderSprite(sprite, transform2D, projection, view, projectionHandle, viewHandle, clippingHandle);
+            renderSprite(sprite, transform2D, projection, view, projectionHandle, viewHandle, sizeHandle, clippingHandle);
         }
 
 
@@ -186,13 +189,16 @@ public class SpriteGLRenderer extends Renderer {
             Mat32 view,
             int projectionHandle,
             int viewHandle,
+            int sizeHandle,
             int clippingHandle
     ) {
-        Integer image = sprite.getImage();
+        sizeData[0] = sprite.getWidth();
+        sizeData[1] = sprite.getHeight();
 
-        if (!textures.containsKey(image)) {
-            textures.put(image, new Integer(GLRendererPlugin.loadTexture(context, image)));
-        }
+        clippingData[0] = sprite.getX();
+        clippingData[1] = sprite.getY();
+        clippingData[2] = sprite.getW();
+        clippingData[3] = sprite.getH();
 
         transform2D.getModelView(modelView, view);
         GLRendererPlugin.mat32ToFloat(projectoionData, projection);
@@ -200,9 +206,15 @@ public class SpriteGLRenderer extends Renderer {
 
         GLES20.glUniformMatrix4fv(projectionHandle, 1, false, projectoionData, 0);
         GLES20.glUniformMatrix4fv(viewHandle, 1, false, modelViewData, 0);
+        GLES20.glUniform2fv(sizeHandle, 1, sizeData, 0);
         GLES20.glUniform4fv(clippingHandle, 1, clippingData, 0);
 
+        Integer image = sprite.getImage();
+        if (!textures.containsKey(image)) {
+            textures.put(image, new Integer(GLRendererPlugin.loadTexture(context, image)));
+        }
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textures.get(image));
+
         GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, 4);
     }
 }
