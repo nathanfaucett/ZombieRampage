@@ -9,12 +9,11 @@ import io.faucette.transform_components.Transform2D;
 
 
 public class PlayerControl extends Component {
+    private static float MIN_SPEED = 0.01f;
     private Vec2 vel = new Vec2();
     private Vec2 dir = new Vec2();
     private Mathf.Direction direction = Mathf.Direction.UP;
-    private float speed = 1.5f;
-
-    private static float MIN_SPEED = 0.01f;
+    private float speed = 0.25f;
 
 
     public PlayerControl() {
@@ -28,10 +27,11 @@ public class PlayerControl extends Component {
         AnalogControl leftAnalog = scene.getEntity("left_analog").getComponent(AnalogControl.class);
         AnalogControl rightAnalog = scene.getEntity("right_analog").getComponent(AnalogControl.class);
 
-        Transform2D transform = entity.getComponent(Transform2D.class);
-        Vec2.smul(vel, leftAnalog.analog, speed * (float) scene.getTime().getDelta());
-        transform.translate(vel);
-        float velLength = vel.length();
+        Vec2.smul(vel, leftAnalog.analog, speed);
+
+        RigidBody rigidBody = entity.getComponent(RigidBody.class);
+        rigidBody.velocity.add(vel);
+        float velLength = rigidBody.velocity.length();
 
         if (rightAnalog.analog.length() > MIN_SPEED) {
             Vec2.normalize(dir, rightAnalog.analog);
@@ -44,7 +44,7 @@ public class PlayerControl extends Component {
         SpriteAnimation spriteAnimation = entity.getComponent(SpriteAnimation.class);
 
         if (velLength > 0f) {
-            spriteAnimation.setSpeed(0.0025f / velLength);
+            spriteAnimation.setSpeed(0.1f / velLength);
         } else {
             spriteAnimation.setSpeed(2f);
         }

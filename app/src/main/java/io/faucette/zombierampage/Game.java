@@ -1,21 +1,17 @@
 package io.faucette.zombierampage;
 
 
-import io.faucette.camera_component.Camera;
-import io.faucette.math.Vec2;
-import io.faucette.scene_graph.Entity;
+import java.util.Comparator;
+
 import io.faucette.scene_graph.Scene;
 import io.faucette.sprite_component.Sprite;
+import io.faucette.sprite_component.SpriteManager;
 import io.faucette.transform_components.Transform2D;
 
-/**
- * Created by nathan on 1/12/17.
- */
 
 public class Game {
-    private boolean playing;
-
     public Scene scene = null;
+    private boolean playing;
 
 
     public Game() {
@@ -25,8 +21,23 @@ public class Game {
 
         scene.addEntity(Entities.createCamera());
         scene.addEntity(Entities.createPlayer());
+        scene.addEntity(Entities.createEnemy());
         scene.addEntity(Entities.createAnalog(AnalogControl.Side.Left));
         scene.addEntity(Entities.createAnalog(AnalogControl.Side.Right));
+
+        scene.getComponentManager(SpriteManager.class).setLayerComparators(Entities.LAYER, new Comparator<Sprite>() {
+            @Override
+            public int compare(Sprite a, Sprite b) {
+                float ay = a.getEntity().getComponent(Transform2D.class).getPosition().y;
+                float by = b.getEntity().getComponent(Transform2D.class).getPosition().y;
+                return ay > by ? -1 : 0;
+            }
+        });
+
+        LevelGenerator level = new LevelGenerator();
+        for (LevelGenerator.Section section: level) {
+            scene.addEntity(Entities.createTile(section.getType(), 1f, section.getX(), section.getY()));
+        }
 
         setScene(scene);
     }
@@ -44,6 +55,7 @@ public class Game {
     }
 
     public void update() {
+        scene.getComponentManager(SpriteManager.class).setDirtyLayer(Entities.LAYER);
         scene.update();
     }
 }

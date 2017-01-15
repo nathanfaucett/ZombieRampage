@@ -4,7 +4,6 @@ package io.faucette.zombierampage;
 import android.view.MotionEvent;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import io.faucette.math.Mathf;
@@ -12,30 +11,10 @@ import io.faucette.math.Vec2;
 import io.faucette.scene_graph.Plugin;
 
 
-
 public class InputPlugin extends Plugin {
     private List<Touch> touches;
     private float width;
     private float height;
-
-
-    public class Touch {
-        private int id;
-        private boolean active;
-        public Vec2 delta;
-        public Vec2 position;
-
-        public Touch(int id) {
-            this.id = id;
-            active = false;
-            delta = new Vec2();
-            position = new Vec2();
-        }
-
-        public int getId() {
-            return id;
-        }
-    }
 
 
     public InputPlugin() {
@@ -52,6 +31,7 @@ public class InputPlugin extends Plugin {
     public float getWidth() {
         return width;
     }
+
     public float getHeight() {
         return height;
     }
@@ -76,7 +56,7 @@ public class InputPlugin extends Plugin {
     }
 
     public Touch getTouch(int index) {
-        synchronized (touches){
+        synchronized (touches) {
             if (index < touches.size()) {
                 Touch touch = touches.get(index);
 
@@ -90,6 +70,7 @@ public class InputPlugin extends Plugin {
             }
         }
     }
+
     public Touch getTouch() {
         return getTouch(0);
     }
@@ -134,5 +115,23 @@ public class InputPlugin extends Plugin {
             }
         }
         return true;
+    }
+
+    public class Touch {
+        public Vec2 delta;
+        public Vec2 position;
+        private int id;
+        private boolean active;
+
+        public Touch(int id) {
+            this.id = id;
+            active = false;
+            delta = new Vec2();
+            position = new Vec2();
+        }
+
+        public int getId() {
+            return id;
+        }
     }
 }

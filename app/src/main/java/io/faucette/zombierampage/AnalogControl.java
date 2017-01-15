@@ -1,5 +1,6 @@
 package io.faucette.zombierampage;
 
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,31 +12,18 @@ import io.faucette.scene_graph.Entity;
 import io.faucette.scene_graph.Scene;
 import io.faucette.transform_components.Transform2D;
 
-/**
- * Created by nathan on 1/14/17.
- */
 
 public class AnalogControl extends Component {
     private static List<Integer> ids = new ArrayList<>();
-
-    private Vec2 tmp;
+    private static float MAX_SIZE = 0.25f;
+    private static float OFFSET = 0.6f;
     public Vec2 analog;
-
+    private Vec2 tmp;
     private boolean dragging;
     private int touchId;
-
     private Side side;
     private float screenWidth;
     private float screenHeight;
-
-    private static float MAX_SIZE = 0.25f;
-    private static float OFFSET = 0.6f;
-
-
-    public enum Side {
-        Left,
-        Right
-    }
 
 
     public AnalogControl(Side s) {
@@ -97,13 +85,14 @@ public class AnalogControl extends Component {
         Transform2D childTransform = child.getComponent(Transform2D.class);
 
         boolean noTouch = true;
-        for (InputPlugin.Touch touch: input.getTouches()) {
+        for (InputPlugin.Touch touch : input.getTouches()) {
             Transform2D transform = entity.getComponent(Transform2D.class);
 
             if (dragging == false && !ids.contains(touch.getId())) {
                 Camera camera = scene.getComponentManager(CameraManager.class).getActiveCamera();
                 Vec2 touchPosition = new Vec2();
                 camera.toWorld(touchPosition, touch.position);
+                touchPosition.sub(camera.getEntity().getComponent(Transform2D.class).getPosition());
 
                 float distance = Utils.circleToPoint(transform.getPosition(), MAX_SIZE, touchPosition);
                 if (distance > 0f) {
@@ -118,6 +107,7 @@ public class AnalogControl extends Component {
                 Camera camera = scene.getComponentManager(CameraManager.class).getActiveCamera();
                 Vec2 touchPosition = new Vec2();
                 camera.toWorld(touchPosition, touch.position);
+                touchPosition.sub(camera.getEntity().getComponent(Transform2D.class).getPosition());
 
                 Vec2.sub(tmp, touchPosition, transform.getPosition());
 
@@ -145,5 +135,10 @@ public class AnalogControl extends Component {
         tmp.smul(0.5f);
 
         return this;
+    }
+
+    public enum Side {
+        Left,
+        Right
     }
 }

@@ -1,10 +1,8 @@
 package io.faucette.zombierampage;
 
+
 import io.faucette.math.Vec2;
 
-/**
- * Created by nathan on 1/14/17.
- */
 
 public class Utils {
 

@@ -20,38 +20,6 @@ public class GLRendererPlugin extends RendererPlugin {
     public GLRendererPlugin() {
     }
 
-    public void set(int width, int height) {
-        getSceneRenderer()
-        .getScene()
-        .getComponentManager(CameraManager.class)
-        .getActiveCamera()
-        .set((float) width, (float) height);
-
-        GLES20.glViewport(0, 0, width, height);
-    }
-
-    @Override
-    public GLRendererPlugin init() {
-        GLES20.glEnable(GLES20.GL_BLEND);
-        GLES20.glBlendFunc(GLES20.GL_ONE, GLES20.GL_ONE_MINUS_SRC_ALPHA);
-        GLES20.glClearColor(0f, 0f, 0f, 1f);
-        return this;
-    }
-
-    @Override
-    public GLRendererPlugin before() {
-        Vec4 background = getSceneRenderer()
-                .getScene()
-                .getComponentManager(CameraManager.class)
-                .getActiveCamera()
-                .getBackground();
-
-        GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
-        GLES20.glClearColor(background.x, background.y, background.z, background.w);
-
-        return this;
-    }
-
     private static int loadShader(int shaderType, String source) {
         int shader = GLES20.glCreateShader(shaderType);
         if (shader != 0) {
@@ -142,5 +110,37 @@ public class GLRendererPlugin extends RendererPlugin {
         out[15] = 1;
 
         return out;
+    }
+
+    public void set(int width, int height) {
+        getSceneRenderer()
+                .getScene()
+                .getComponentManager(CameraManager.class)
+                .getActiveCamera()
+                .set((float) width, (float) height);
+
+        GLES20.glViewport(0, 0, width, height);
+    }
+
+    @Override
+    public GLRendererPlugin init() {
+        GLES20.glEnable(GLES20.GL_BLEND);
+        GLES20.glBlendFunc(GLES20.GL_ONE, GLES20.GL_ONE_MINUS_SRC_ALPHA);
+        GLES20.glClearColor(0f, 0f, 0f, 1f);
+        return this;
+    }
+
+    @Override
+    public GLRendererPlugin before() {
+        Vec4 background = getSceneRenderer()
+                .getScene()
+                .getComponentManager(CameraManager.class)
+                .getActiveCamera()
+                .getBackground();
+
+        GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
+        GLES20.glClearColor(background.x, background.y, background.z, background.w);
+
+        return this;
     }
 }

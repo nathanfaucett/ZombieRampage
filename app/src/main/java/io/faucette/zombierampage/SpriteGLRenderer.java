@@ -7,8 +7,6 @@ import android.opengl.GLES20;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
-import java.nio.ShortBuffer;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -26,10 +24,35 @@ import io.faucette.transform_components.Transform2D;
 
 public class SpriteGLRenderer extends Renderer {
 
+    private static final String vertexSrc =
+            "attribute vec2 position;" +
+                    "attribute vec2 uv;" +
+
+                    "uniform mat4 projection;" +
+                    "uniform mat4 modelView;" +
+                    "uniform vec2 size;" +
+
+                    "varying vec2 vUv;" +
+
+                    "void main() {" +
+                    "  vUv = vec2(uv.x, 1.0 - uv.y);" +
+                    "  gl_Position = projection * modelView * vec4(size * position, 0.0, 1.0);" +
+                    "}";
+    private static final String fragmentSrc =
+            "precision mediump float;" +
+
+                    "uniform sampler2D texture;" +
+                    "uniform vec4 clipping;" +
+
+                    "varying vec2 vUv;" +
+
+                    "void main() {" +
+                    "  gl_FragColor = texture2D(texture, clipping.xy + (vUv * clipping.zw));" +
+                    "}";
     private static float vertexData[] = {
-            1f,   1f,
-            -1f,  1f,
-            1f,  -1f,
+            1f, 1f,
+            -1f, 1f,
+            1f, -1f,
             -1f, -1f
     };
     private static float uvData[] = {
@@ -38,41 +61,14 @@ public class SpriteGLRenderer extends Renderer {
             1f, 0f,
             0f, 0f
     };
-
-    private static final String vertexSrc =
-            "attribute vec2 position;" +
-            "attribute vec2 uv;" +
-
-            "uniform mat4 projection;" +
-            "uniform mat4 modelView;" +
-            "uniform vec2 size;" +
-
-            "varying vec2 vUv;" +
-
-            "void main() {" +
-            "  vUv = vec2(uv.x, 1.0 - uv.y);" +
-            "  gl_Position = projection * modelView * vec4(size * position, 0.0, 1.0);" +
-            "}";
-
-    private static final String fragmentSrc =
-            "precision mediump float;" +
-
-            "uniform sampler2D texture;" +
-            "uniform vec4 clipping;" +
-
-            "varying vec2 vUv;" +
-
-            "void main() {" +
-            "  gl_FragColor = texture2D(texture, clipping.xy + (vUv * clipping.zw));" +
-            "}";
-
     private int program = -1;
 
     private float[] projectoionData = new float[16];
     private float[] modelViewData = new float[16];
-    private float[] clippingData = new float[] { 0f, 0f, 1f, 1f};
-    private float[] sizeData = new float[] { 1f, 1f};
+    private float[] clippingData = new float[]{0f, 0f, 1f, 1f};
+    private float[] sizeData = new float[]{1f, 1f};
     private Mat32 modelView = new Mat32();
+    private Mat32 identity = new Mat32();
 
     private Context context;
     private HashMap<Integer, Integer> textures;
@@ -200,7 +196,11 @@ public class SpriteGLRenderer extends Renderer {
         clippingData[2] = sprite.getW();
         clippingData[3] = sprite.getH();
 
-        transform2D.getModelView(modelView, view);
+        if (sprite.getLocal()) {
+            transform2D.getModelView(modelView, identity);
+        } else {
+            transform2D.getModelView(modelView, view);
+        }
         GLRendererPlugin.mat32ToFloat(projectoionData, projection);
         GLRendererPlugin.mat32ToFloat(modelViewData, modelView);
 
