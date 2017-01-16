@@ -11,7 +11,6 @@ import io.faucette.transform_components.Transform2D;
 
 public class Game {
     public Scene scene = null;
-    private boolean playing;
 
 
     public Game() {
@@ -36,7 +35,7 @@ public class Game {
 
         LevelGenerator level = new LevelGenerator();
         for (LevelGenerator.Section section: level) {
-            scene.addEntity(Entities.createTile(section.getType(), 1f, section.getX(), section.getY()));
+            scene.addEntity(Entities.createTile(section.getType(), 2f, section.getX(), section.getY()));
         }
 
         setScene(scene);

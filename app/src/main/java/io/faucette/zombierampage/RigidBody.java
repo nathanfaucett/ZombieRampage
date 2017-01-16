@@ -72,7 +72,7 @@ public class RigidBody extends Component {
         return this;
     }
     public RigidBody setShapes(Iterable<Shape> s) {
-        for (Shape shape: shapes) {
+        for (Shape shape: s) {
             shape.body = this;
             shapes.add(shape);
         }

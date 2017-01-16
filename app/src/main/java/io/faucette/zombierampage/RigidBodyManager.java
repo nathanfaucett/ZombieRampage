@@ -63,8 +63,8 @@ public class RigidBodyManager extends ComponentManager{
     }
 
     private void resolveBody(RigidBody body, Vec2 normal, float depth) {
-        body.velocity.x += normal.x * depth;
-        body.velocity.y += normal.y * depth;
+        body.velocity.x += normal.x * depth * 10f;
+        body.velocity.y += normal.y * depth * 10f;
     }
 
     private void getContacts() {

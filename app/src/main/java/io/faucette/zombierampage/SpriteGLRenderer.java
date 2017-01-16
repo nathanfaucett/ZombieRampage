@@ -50,10 +50,10 @@ public class SpriteGLRenderer extends Renderer {
                     "  gl_FragColor = texture2D(texture, clipping.xy + (vUv * clipping.zw));" +
                     "}";
     private static float vertexData[] = {
-            1f, 1f,
-            -1f, 1f,
-            1f, -1f,
-            -1f, -1f
+            0.5f, 0.5f,
+            -0.5f, 0.5f,
+            0.5f, -0.5f,
+            -0.5f, -0.5f
     };
     private static float uvData[] = {
             1f, 1f,

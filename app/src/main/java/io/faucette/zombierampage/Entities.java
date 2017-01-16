@@ -1,7 +1,9 @@
 package io.faucette.zombierampage;
 
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import io.faucette.camera_component.Camera;
 import io.faucette.math.Vec2;
@@ -26,16 +28,16 @@ public class Entities {
                 .addComponent(new Sprite()
                         .setLayer(MENU_LAYER)
                         .setLocal(true)
-                        .setWidth(0.25f)
-                        .setHeight(0.25f)
+                        .setWidth(0.5f)
+                        .setHeight(0.5f)
                         .setImage(R.drawable.analog))
                 .addChild(new Entity()
                         .addComponent(new Transform2D())
                         .addComponent(new Sprite()
                                 .setLayer(MENU_LAYER)
                                 .setLocal(true)
-                                .setWidth(0.125f)
-                                .setHeight(0.125f)
+                                .setWidth(0.25f)
+                                .setHeight(0.25f)
                                 .setImage(R.drawable.analog)));
     }
 
@@ -44,12 +46,12 @@ public class Entities {
                 .addComponent(new Transform2D())
                 .addComponent(new PlayerControl())
                 .addComponent(new RigidBody(RigidBody.Type.Dynamic)
-                    .addShape(new RigidBody.Shape(new Vec2(0f, -0.125f), 0.25f, 0.125f)))
+                    .addShape(new RigidBody.Shape(0.25f, 0.25f)))
                 .addComponent(new SpriteAnimation(animations, "down"))
                 .addComponent(new Sprite()
                         .setLayer(LAYER)
-                        .setWidth(0.125f)
-                        .setHeight(0.125f)
+                        .setWidth(0.25f)
+                        .setHeight(0.25f)
                         .setImage(R.drawable.player));
     }
 
@@ -57,19 +59,19 @@ public class Entities {
         return new Entity()
                 .addComponent(new Transform2D())
                 .addComponent(new RigidBody(RigidBody.Type.Dynamic)
-                        .addShape(new RigidBody.Shape(new Vec2(0f, -0.125f), 0.25f, 0.125f)))
+                        .addShape(new RigidBody.Shape(0.25f, 0.25f)))
                 .addComponent(new SpriteAnimation(animations, "down"))
                 .addComponent(new Sprite()
                         .setLayer(LAYER)
-                        .setWidth(0.125f)
-                        .setHeight(0.125f)
+                        .setWidth(0.25f)
+                        .setHeight(0.25f)
                         .setImage(R.drawable.player));
     }
 
     public static Entity createCamera() {
         return new Entity("camera")
                 .addComponent(new Camera()
-                    .setBackground(new Vec4(0.5f, 0.5f, 0.5f, 1f)))
+                    .setBackground(new Vec4(0f, 0f, 0f, 1f)))
                 .addComponent(new Transform2D())
                 .addComponent(new CameraControl());
     }
@@ -77,17 +79,111 @@ public class Entities {
     public static Entity createTile(LevelGenerator.Type type, float size, int x, int y) {
         return new Entity()
                 .addComponent(new RigidBody()
-                        .addShape(new RigidBody.Shape(new Vec2(size, 0f), 0.2f, size * 2f))
-                        .addShape(new RigidBody.Shape(new Vec2(-size, 0f), 0.2f, size * 2f))
-                        .addShape(new RigidBody.Shape(new Vec2(0f, size), size * 2f, 0.2f))
-                        .addShape(new RigidBody.Shape(new Vec2(0f, -size), size * 2f, 0.2f)))
+                        .setShapes(Entities.getShapes(type, size)))
                 .addComponent(new Transform2D()
-                    .setPosition(new Vec2(x * size * 2f, y * size * 2f)))
+                    .setPosition(new Vec2(x * size, y * size)))
                 .addComponent(new Sprite()
                         .setLayer(BG_LAYER)
                         .setWidth(size)
                         .setHeight(size)
                         .setImage(getImage(type)));
+    }
+
+    private static List<RigidBody.Shape> getShapes(LevelGenerator.Type type, float size) {
+        List<RigidBody.Shape> shapes = new ArrayList<>();
+
+        float w = 0.25f;
+        float hw = w * 0.5f;
+        size += w * 2f;
+
+        float max = size * 0.5f;
+        float maxx = max - hw;
+        float minx = -maxx;
+        float maxy = max - hw;
+        float miny = -maxy;
+
+        switch (type) {
+            case TopEnd:
+                shapes.add(new RigidBody.Shape(new Vec2(0f, maxy), size, w));
+                shapes.add(new RigidBody.Shape(new Vec2(minx, 0), w, size));
+                shapes.add(new RigidBody.Shape(new Vec2(maxx, 0), w, size));
+                break;
+            case RightEnd:
+                shapes.add(new RigidBody.Shape(new Vec2(maxx, 0), w, size));
+                shapes.add(new RigidBody.Shape(new Vec2(0f, miny), size, w));
+                shapes.add(new RigidBody.Shape(new Vec2(0f, maxy), size, w));
+                break;
+            case BottomEnd:
+                shapes.add(new RigidBody.Shape(new Vec2(0f, miny), size, w));
+                shapes.add(new RigidBody.Shape(new Vec2(minx, 0), w, size));
+                shapes.add(new RigidBody.Shape(new Vec2(maxx, 0), w, size));
+                break;
+            case LeftEnd:
+                shapes.add(new RigidBody.Shape(new Vec2(minx, 0), w, size));
+                shapes.add(new RigidBody.Shape(new Vec2(0f, miny), size, w));
+                shapes.add(new RigidBody.Shape(new Vec2(0f, maxy), size, w));
+                break;
+
+            case TopRightTurn:
+                shapes.add(new RigidBody.Shape(new Vec2(maxx, maxy), w, w));
+                shapes.add(new RigidBody.Shape(new Vec2(minx, 0f), w, size));
+                shapes.add(new RigidBody.Shape(new Vec2(0f, miny), size, w));
+                break;
+            case TopLeftTurn:
+                shapes.add(new RigidBody.Shape(new Vec2(minx, maxy), w, w));
+                shapes.add(new RigidBody.Shape(new Vec2(maxx, 0f), w, size));
+                shapes.add(new RigidBody.Shape(new Vec2(0f, miny), size, w));
+                break;
+            case BottomRightTurn:
+                shapes.add(new RigidBody.Shape(new Vec2(maxx, miny), w, w));
+                shapes.add(new RigidBody.Shape(new Vec2(minx, 0f), w, size));
+                shapes.add(new RigidBody.Shape(new Vec2(0f, maxy), size, w));
+                break;
+            case BottomLeftTurn:
+                shapes.add(new RigidBody.Shape(new Vec2(minx, miny), w, w));
+                shapes.add(new RigidBody.Shape(new Vec2(maxx, 0f), w, size));
+                shapes.add(new RigidBody.Shape(new Vec2(0f, maxy), size, w));
+                break;
+
+            case VerticalLeftThreeWay:
+                shapes.add(new RigidBody.Shape(new Vec2(minx, miny), w, w));
+                shapes.add(new RigidBody.Shape(new Vec2(minx, maxy), w, w));
+                shapes.add(new RigidBody.Shape(new Vec2(maxx, 0f), w, size));
+                break;
+            case VerticalRightThreeWay:
+                shapes.add(new RigidBody.Shape(new Vec2(maxx, miny), w, w));
+                shapes.add(new RigidBody.Shape(new Vec2(maxx, maxy), w, w));
+                shapes.add(new RigidBody.Shape(new Vec2(minx, 0f), w, size));
+                break;
+            case HorizontalTopThreeWay:
+                shapes.add(new RigidBody.Shape(new Vec2(miny, maxy), w, w));
+                shapes.add(new RigidBody.Shape(new Vec2(maxy, maxy), w, w));
+                shapes.add(new RigidBody.Shape(new Vec2(0f, miny), size, w));
+                break;
+            case HorizontalBottomThreeWay:
+                shapes.add(new RigidBody.Shape(new Vec2(miny, miny), w, w));
+                shapes.add(new RigidBody.Shape(new Vec2(maxy, miny), w, w));
+                shapes.add(new RigidBody.Shape(new Vec2(0f, maxy), size, w));
+                break;
+
+            case Vertical:
+                shapes.add(new RigidBody.Shape(new Vec2(minx, 0), w, size));
+                shapes.add(new RigidBody.Shape(new Vec2(maxx, 0), w, size));
+                break;
+            case Horizontal:
+                shapes.add(new RigidBody.Shape(new Vec2(0f, miny), size, w));
+                shapes.add(new RigidBody.Shape(new Vec2(0f, maxy), size, w));
+                break;
+
+            case FourWay:
+                shapes.add(new RigidBody.Shape(new Vec2(maxx, maxy), w, w));
+                shapes.add(new RigidBody.Shape(new Vec2(maxx, miny), w, w));
+                shapes.add(new RigidBody.Shape(new Vec2(minx, maxy), w, w));
+                shapes.add(new RigidBody.Shape(new Vec2(minx, miny), w, w));
+                break;
+        }
+
+        return shapes;
     }
 
     public static Integer getImage(LevelGenerator.Type type) {
