@@ -14,14 +14,25 @@ import io.faucette.transform_components.Transform2D;
 
 
 public class AnalogControl extends Component {
-    private static List<Integer> ids = new ArrayList<>();
+
+
+    public enum Side {
+        Left,
+        Right
+    }
+
+
+    private static long leftTouchId = -1;
+    private static long rightTouchId = -1;
+
     private static float MAX_SIZE = 0.25f;
     private static float OFFSET = 0.6f;
+
+
     public Vec2 analog;
     private Vec2 tmp;
-    private boolean dragging;
-    private int touchId;
     private Side side;
+    private boolean dragging;
     private float screenWidth;
     private float screenHeight;
 
@@ -30,12 +41,31 @@ public class AnalogControl extends Component {
         super();
 
         side = s;
+        dragging = false;
 
         tmp = new Vec2();
         analog = new Vec2();
+    }
 
-        dragging = false;
-        touchId = -1;
+    private static boolean isTouchIdUsed(long id) {
+        return leftTouchId == id || rightTouchId == id;
+    }
+
+    private long getTouchId() {
+        if (side == Side.Left) {
+            return leftTouchId;
+        } else if (side == Side.Right) {
+            return rightTouchId;
+        } else {
+            return -1;
+        }
+    }
+    private void setTouchIdUsed(long id) {
+        if (side == Side.Left) {
+            leftTouchId = id;
+        } else if (side == Side.Right) {
+            rightTouchId = id;
+        }
     }
 
     private AnalogControl updatePosition(InputPlugin input) {
@@ -83,27 +113,12 @@ public class AnalogControl extends Component {
 
         Entity child = entity.getChildren().get(0);
         Transform2D childTransform = child.getComponent(Transform2D.class);
+        Transform2D transform = entity.getComponent(Transform2D.class);
 
-        boolean noTouch = true;
-        for (InputPlugin.Touch touch : input.getTouches()) {
-            Transform2D transform = entity.getComponent(Transform2D.class);
+        if (dragging) {
+            InputPlugin.Touch touch = input.getTouch(getTouchId());
 
-            if (dragging == false && !ids.contains(touch.getId())) {
-                Camera camera = scene.getComponentManager(CameraManager.class).getActiveCamera();
-                Vec2 touchPosition = new Vec2();
-                camera.toWorld(touchPosition, touch.position);
-                touchPosition.sub(camera.getEntity().getComponent(Transform2D.class).getPosition());
-
-                float distance = Utils.circleToPoint(transform.getPosition(), MAX_SIZE, touchPosition);
-                if (distance > 0f) {
-                    noTouch = false;
-                    touchId = touch.getId();
-                    dragging = true;
-                    ids.add(new Integer(touchId));
-                }
-            } else if (dragging == true && touchId == touch.getId()) {
-                noTouch = false;
-
+            if (touch != null) {
                 Camera camera = scene.getComponentManager(CameraManager.class).getActiveCamera();
                 Vec2 touchPosition = new Vec2();
                 camera.toWorld(touchPosition, touch.position);
@@ -116,18 +131,32 @@ public class AnalogControl extends Component {
                     tmp.normalize();
                     tmp.smul(MAX_SIZE);
                 }
+            } else {
+                setTouchIdUsed(-1);
+                dragging = false;
             }
-        }
+        } else {
+            boolean noTouch = true;
+            for (InputPlugin.Touch touch : input.getTouches()) {
+                if (!isTouchIdUsed(touch.getId())) {
+                    Camera camera = scene.getComponentManager(CameraManager.class).getActiveCamera();
+                    Vec2 touchPosition = new Vec2();
+                    camera.toWorld(touchPosition, touch.position);
+                    touchPosition.sub(camera.getEntity().getComponent(Transform2D.class).getPosition());
 
-        if (noTouch) {
-            if (touchId != -1) {
-                int index = ids.indexOf(touchId);
-                if (index != -1) {
-                    ids.remove(index);
+                    float distance = Utils.circleToPoint(transform.getPosition(), MAX_SIZE, touchPosition);
+                    if (distance > 0f) {
+                        setTouchIdUsed(touch.getId());
+                        dragging = true;
+                        noTouch = false;
+                    }
                 }
             }
-            dragging = false;
-            touchId = -1;
+
+            if (noTouch) {
+                setTouchIdUsed(-1);
+                dragging = false;
+            }
         }
 
         childTransform.setPosition(tmp);
@@ -135,10 +164,5 @@ public class AnalogControl extends Component {
         tmp.smul(0.5f);
 
         return this;
-    }
-
-    public enum Side {
-        Left,
-        Right
     }
 }

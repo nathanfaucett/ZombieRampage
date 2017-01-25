@@ -166,8 +166,11 @@ public class SpriteGLRenderer extends Renderer {
 
         while (it.hasNext()) {
             Sprite sprite = it.next();
-            Transform2D transform2D = sprite.getEntity().getComponent(Transform2D.class);
-            renderSprite(sprite, transform2D, projection, view, projectionHandle, viewHandle, sizeHandle, clippingHandle);
+
+            if (sprite.getVisible()) {
+                Transform2D transform2D = sprite.getEntity().getComponent(Transform2D.class);
+                renderSprite(sprite, transform2D, projection, view, projectionHandle, viewHandle, sizeHandle, clippingHandle);
+            }
         }
 
 

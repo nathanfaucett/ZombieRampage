@@ -2,6 +2,7 @@ package io.faucette.zombierampage;
 
 import io.faucette.camera_component.Camera;
 import io.faucette.camera_component.CameraManager;
+import io.faucette.math.Vec2;
 import io.faucette.scene_graph.Component;
 import io.faucette.scene_graph.Entity;
 import io.faucette.scene_graph.Scene;
@@ -25,9 +26,7 @@ public class CameraControl extends Component {
         Scene scene = entity.getScene();
         Transform2D playerTransform = scene.getEntity("player").getComponent(Transform2D.class);
         Transform2D transform = entity.getComponent(Transform2D.class);
-
         transform.setPosition(playerTransform.getPosition());
-
         return this;
     }
 }
