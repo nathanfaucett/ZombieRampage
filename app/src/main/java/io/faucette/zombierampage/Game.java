@@ -2,6 +2,7 @@ package io.faucette.zombierampage;
 
 
 import java.util.Comparator;
+import java.util.Random;
 
 import io.faucette.scene_graph.Scene;
 import io.faucette.sprite_component.Sprite;
@@ -14,13 +15,16 @@ public class Game {
 
 
     public Game() {
+        createGame();
+    }
+
+    private void createGame() {
         Scene scene = new Scene();
 
         scene.addPlugin(new InputPlugin());
 
         scene.addEntity(Entities.createCamera());
         scene.addEntity(Entities.createPlayer());
-        scene.addEntity(Entities.createEnemy());
         scene.addEntity(Entities.createAnalog(AnalogControl.Side.Left));
         scene.addEntity(Entities.createAnalog(AnalogControl.Side.Right));
 
@@ -34,8 +38,16 @@ public class Game {
         });
 
         LevelGenerator level = new LevelGenerator();
+        Random rand = new Random();
+        float size = 2f;
         for (LevelGenerator.Section section: level) {
-            scene.addEntity(Entities.createTile(section.getType(), 2f, section.getX(), section.getY()));
+            scene.addEntity(Entities.createTile(section, size));
+
+            for (int i = 0; i < 5; i++) {
+                float x = ((section.getX() * size) - (size * 0.5f)) + (rand.nextFloat() * size);
+                float y = ((section.getY() * size) - (size * 0.5f)) + (rand.nextFloat() * size);
+                scene.addEntity(Entities.createEnemy(x, y));
+            }
         }
 
         setScene(scene);
@@ -54,7 +66,7 @@ public class Game {
     }
 
     public void update() {
-        scene.getComponentManager(SpriteManager.class).setDirtyLayer(Entities.LAYER);
         scene.update();
+        scene.getComponentManager(SpriteManager.class).setDirtyLayer(Entities.LAYER);
     }
 }

@@ -204,8 +204,8 @@ public class SpriteGLRenderer extends Renderer {
         } else {
             transform2D.getModelView(modelView, view);
         }
-        GLRendererPlugin.mat32ToFloat(projectoionData, projection);
-        GLRendererPlugin.mat32ToFloat(modelViewData, modelView);
+        GLRendererPlugin.mat32ToFloat16(projectoionData, projection);
+        GLRendererPlugin.mat32ToFloat16(modelViewData, modelView);
 
         GLES20.glUniformMatrix4fv(projectionHandle, 1, false, projectoionData, 0);
         GLES20.glUniformMatrix4fv(viewHandle, 1, false, modelViewData, 0);

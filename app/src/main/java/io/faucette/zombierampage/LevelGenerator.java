@@ -41,7 +41,7 @@ public class LevelGenerator implements Iterable<LevelGenerator.Section> {
     public class Section {
         private int x;
         private int y;
-        private float value;
+        private float chance;
         private Type type;
         private String name;
 
@@ -54,7 +54,7 @@ public class LevelGenerator implements Iterable<LevelGenerator.Section> {
 
         public int getX() { return x; }
         public int getY() { return y; }
-        public float getValue() { return value; }
+        public float getChance() { return chance; }
         public Type getType() { return type; }
         public String getName() { return name; }
 
@@ -73,7 +73,7 @@ public class LevelGenerator implements Iterable<LevelGenerator.Section> {
 
     private void generate() {
         Section root = getOrCreateSection(0, 0);
-        root.value = 1f;
+        root.chance = 1f;
         generatePaths(root, 1f);
         getPathTypes(root);
     }
@@ -101,7 +101,7 @@ public class LevelGenerator implements Iterable<LevelGenerator.Section> {
 
             if (value < chance) {
                 Section nextSection = getOrCreateSection(xy[0], xy[1]);
-                nextSection.value = value;
+                nextSection.chance = value;
                 generatePaths(nextSection, chance - increment);
             }
         }

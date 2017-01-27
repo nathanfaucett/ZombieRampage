@@ -86,7 +86,7 @@ public class GLRendererPlugin extends RendererPlugin {
         return textureHandle;
     }
 
-    public static float[] mat32ToFloat(float[] out, Mat32 mat32) {
+    public static float[] mat32ToFloat16(float[] out, Mat32 mat32) {
         float[] m = mat32.getValues();
 
         out[0] = m[0];

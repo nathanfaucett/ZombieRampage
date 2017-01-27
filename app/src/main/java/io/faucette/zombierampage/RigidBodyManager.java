@@ -36,6 +36,11 @@ public class RigidBodyManager extends ComponentManager{
     }
 
     @Override
+    public int getOrder() {
+        return  1;
+    }
+
+    @Override
     public RigidBodyManager update() {
 
         super.update();
@@ -63,8 +68,8 @@ public class RigidBodyManager extends ComponentManager{
     }
 
     private void resolveBody(RigidBody body, Vec2 normal, float depth) {
-        body.velocity.x += normal.x * depth * 10f;
-        body.velocity.y += normal.y * depth * 10f;
+        body.velocity.x += normal.x * depth * 5f;
+        body.velocity.y += normal.y * depth * 5f;
     }
 
     private void getContacts() {

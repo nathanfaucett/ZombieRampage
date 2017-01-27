@@ -45,8 +45,9 @@ public class Entities {
         return new Entity("player")
                 .addComponent(new Transform2D())
                 .addComponent(new PlayerControl())
+                .addComponent(new DirectionControl())
                 .addComponent(new RigidBody(RigidBody.Type.Dynamic)
-                    .addShape(new RigidBody.Shape(new Vec2(0f, -0.0625f),0.25f, 0.125f)))
+                    .addShape(new RigidBody.Shape(new Vec2(0f, -0.0625f),0.2f, 0.125f)))
                 .addComponent(new SpriteAnimation(animations, "down"))
                 .addComponent(new Sprite()
                         .setLayer(LAYER)
@@ -55,12 +56,14 @@ public class Entities {
                         .setImage(R.drawable.player));
     }
 
-    public static Entity createEnemy() {
+    public static Entity createEnemy(float x, float y) {
         return new Entity()
-                .addComponent(new Transform2D())
+                .addComponent(new Transform2D()
+                    .setPosition(new Vec2(x, y)))
                 .addComponent(new EnemyControl())
+                .addComponent(new DirectionControl())
                 .addComponent(new RigidBody(RigidBody.Type.Dynamic)
-                        .addShape(new RigidBody.Shape(new Vec2(0f, -0.0625f), 0.25f, 0.125f)))
+                        .addShape(new RigidBody.Shape(new Vec2(0f, -0.0625f), 0.2f, 0.125f)))
                 .addComponent(new SpriteAnimation(animations, "down"))
                 .addComponent(new Sprite()
                         .setLayer(LAYER)
@@ -72,13 +75,19 @@ public class Entities {
     public static Entity createCamera() {
         return new Entity("camera")
                 .addComponent(new Camera()
+                    .setOrthographicSize(4)
                     .setBackground(new Vec4(0f, 0f, 0f, 1f)))
                 .addComponent(new Transform2D())
                 .addComponent(new CameraControl());
     }
 
-    public static Entity createTile(LevelGenerator.Type type, float size, int x, int y) {
+    public static Entity createTile(LevelGenerator.Section section, float size) {
+        LevelGenerator.Type type = section.getType();
+        float x = section.getX();
+        float y = section.getY();
+
         return new Entity()
+                .addComponent(new TileControl(section, size))
                 .addComponent(new RigidBody()
                         .setShapes(Entities.getShapes(type, size)))
                 .addComponent(new Transform2D()
