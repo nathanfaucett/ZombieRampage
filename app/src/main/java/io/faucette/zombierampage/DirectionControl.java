@@ -3,14 +3,13 @@ package io.faucette.zombierampage;
 import io.faucette.math.Mathf;
 import io.faucette.math.Vec2;
 import io.faucette.scene_graph.Component;
-import io.faucette.scene_graph.Entity;
 
 
 public class DirectionControl extends Component {
     private static float MIN_SPEED = 0.01f;
-    private Mathf.Direction dir = Mathf.Direction.UP;
     public Vec2 direction = new Vec2();
     public boolean fromVelocity = true;
+    private Mathf.Direction dir = Mathf.Direction.UP;
 
 
     public DirectionControl() {
@@ -19,7 +18,6 @@ public class DirectionControl extends Component {
 
     @Override
     public DirectionControl update() {
-        Entity entity = getEntity();
         SpriteAnimation spriteAnimation = entity.getComponent(SpriteAnimation.class);
 
         if (fromVelocity) {
@@ -34,11 +32,13 @@ public class DirectionControl extends Component {
 
             if (velLength > 0f) {
                 spriteAnimation.setSpeed(0.1f / velLength);
+            } else {
+                spriteAnimation.setSpeed(2f);
             }
         }
 
         if (!fromVelocity) {
-            spriteAnimation.setSpeed(2f);
+            dir = Mathf.direction(direction.x, direction.y);
         }
 
         switch (dir) {

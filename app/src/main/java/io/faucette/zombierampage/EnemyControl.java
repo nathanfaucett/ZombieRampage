@@ -17,8 +17,6 @@ public class EnemyControl extends Component {
     private Vec2 direction = new Vec2();
     private Vec2 velocity = new Vec2();
 
-    private float speed = 0.125f;
-
 
     public EnemyControl() {
         super();
@@ -44,7 +42,7 @@ public class EnemyControl extends Component {
             }
         }
 
-        Vec2.smul(velocity, direction, speed);
+        Vec2.smul(velocity, direction, entity.getComponent(StatusControl.class).getSpeed());
         entity.getComponent(RigidBody.class).velocity.add(velocity);
 
         return this;

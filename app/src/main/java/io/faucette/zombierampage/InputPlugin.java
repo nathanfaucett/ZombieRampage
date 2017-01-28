@@ -11,10 +11,10 @@ import io.faucette.scene_graph.Plugin;
 
 
 public class InputPlugin extends Plugin {
+    private static long TOUCH_ID = 0;
     private List<Touch> touches;
     private float width;
     private float height;
-
 
     public InputPlugin() {
         super();
@@ -28,6 +28,7 @@ public class InputPlugin extends Plugin {
     public float getWidth() {
         return width;
     }
+
     public float getHeight() {
         return height;
     }
@@ -75,6 +76,7 @@ public class InputPlugin extends Plugin {
         touch.delta.x = 0f;
         touch.delta.y = 0f;
     }
+
     private void touchMove(int index, float ex, float ey) {
         if (index < touches.size()) {
             Touch touch = touches.get(index);
@@ -89,11 +91,13 @@ public class InputPlugin extends Plugin {
             }
         }
     }
+
     private void touchEnd(int index) {
         if (index < touches.size()) {
             touches.remove(index);
         }
     }
+
     private void touchCancel() {
         touches.clear();
     }
@@ -146,13 +150,11 @@ public class InputPlugin extends Plugin {
         return true;
     }
 
-    private static long TOUCH_ID = 0;
-
     public class Touch {
-        private int index;
-        private long id;
         public Vec2 delta;
         public Vec2 position;
+        private int index;
+        private long id;
 
         public Touch(int index) {
             this.index = index;
@@ -167,7 +169,7 @@ public class InputPlugin extends Plugin {
 
         @Override
         public String toString() {
-            return "Touch { index: " + index + ", id: " + id + ", "+ delta +", "+ position +"}";
+            return "Touch { index: " + index + ", id: " + id + ", " + delta + ", " + position + "}";
         }
     }
 }

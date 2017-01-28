@@ -43,11 +43,13 @@ public class Entities {
 
     public static Entity createPlayer() {
         return new Entity("player")
+                .setTag("player")
                 .addComponent(new Transform2D())
+                .addComponent(new StatusControl(100, 0, 0.2f))
                 .addComponent(new PlayerControl())
                 .addComponent(new DirectionControl())
                 .addComponent(new RigidBody(RigidBody.Type.Dynamic)
-                    .addShape(new RigidBody.Shape(new Vec2(0f, -0.0625f),0.2f, 0.125f)))
+                        .addShape(new RigidBody.Shape(new Vec2(0f, -0.0625f), 0.2f, 0.125f)))
                 .addComponent(new SpriteAnimation(animations, "down"))
                 .addComponent(new Sprite()
                         .setLayer(LAYER)
@@ -59,10 +61,19 @@ public class Entities {
     public static Entity createEnemy(float x, float y) {
         return new Entity()
                 .addComponent(new Transform2D()
-                    .setPosition(new Vec2(x, y)))
+                        .setPosition(new Vec2(x, y)))
+                .addComponent(new StatusControl(100, 20, 0.1f))
                 .addComponent(new EnemyControl())
                 .addComponent(new DirectionControl())
                 .addComponent(new RigidBody(RigidBody.Type.Dynamic)
+                        .addOnCollision(new RigidBody.OnCollision() {
+                            @Override
+                            public void onCollision(RigidBody other) {
+                                if (other.getEntity().compareTag("player")) {
+                                    System.out.println("HIT THE PLAYER!!");
+                                }
+                            }
+                        })
                         .addShape(new RigidBody.Shape(new Vec2(0f, -0.0625f), 0.2f, 0.125f)))
                 .addComponent(new SpriteAnimation(animations, "down"))
                 .addComponent(new Sprite()
@@ -75,8 +86,8 @@ public class Entities {
     public static Entity createCamera() {
         return new Entity("camera")
                 .addComponent(new Camera()
-                    .setOrthographicSize(4)
-                    .setBackground(new Vec4(0f, 0f, 0f, 1f)))
+                        .setOrthographicSize(1f)
+                        .setBackground(new Vec4(0f, 0f, 0f, 1f)))
                 .addComponent(new Transform2D())
                 .addComponent(new CameraControl());
     }
@@ -91,7 +102,7 @@ public class Entities {
                 .addComponent(new RigidBody()
                         .setShapes(Entities.getShapes(type, size)))
                 .addComponent(new Transform2D()
-                    .setPosition(new Vec2(x * size, y * size)))
+                        .setPosition(new Vec2(x * size, y * size)))
                 .addComponent(new Sprite()
                         .setLayer(BG_LAYER)
                         .setWidth(size)

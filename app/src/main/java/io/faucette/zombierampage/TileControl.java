@@ -20,9 +20,11 @@ public class TileControl extends Component {
     public int getX() {
         return section.getX();
     }
+
     public int getY() {
         return section.getY();
     }
+
     public float getSize() {
         return size;
     }
@@ -31,6 +33,7 @@ public class TileControl extends Component {
     public Class<? extends ComponentManager> getComponentManagerClass() {
         return TileControlManager.class;
     }
+
     @Override
     public ComponentManager createComponentManager() {
         return new TileControlManager();

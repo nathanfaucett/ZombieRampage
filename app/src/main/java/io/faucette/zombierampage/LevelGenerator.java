@@ -15,60 +15,15 @@ public class LevelGenerator implements Iterable<LevelGenerator.Section> {
     private Map<String, Section> sections;
 
 
-    public enum Type {
-        TopEnd,
-        RightEnd,
-        BottomEnd,
-        LeftEnd,
-
-        TopRightTurn,
-        TopLeftTurn,
-        BottomRightTurn,
-        BottomLeftTurn,
-
-        VerticalLeftThreeWay,
-        VerticalRightThreeWay,
-        HorizontalTopThreeWay,
-        HorizontalBottomThreeWay,
-
-        Vertical,
-        Horizontal,
-
-        FourWay,
-    }
-
-
-    public class Section {
-        private int x;
-        private int y;
-        private float chance;
-        private Type type;
-        private String name;
-
-        public Section(int x, int y) {
-            this.x = x;
-            this.y = y;
-            this.type = null;
-            this.name = LevelGenerator.getSectionName(x, y);
-        }
-
-        public int getX() { return x; }
-        public int getY() { return y; }
-        public float getChance() { return chance; }
-        public Type getType() { return type; }
-        public String getName() { return name; }
-
-        public String toString() {
-            return getType() + " " + getName();
-        }
-    }
-
-
     public LevelGenerator() {
         random = new Random(System.currentTimeMillis());
         increment = 0.25f;
         sections = new HashMap<>();
         generate();
+    }
+
+    private static String getSectionName(int x, int y) {
+        return x + ":" + y;
     }
 
     private void generate() {
@@ -84,19 +39,19 @@ public class LevelGenerator implements Iterable<LevelGenerator.Section> {
         List<int[]> available = new ArrayList<>();
 
         if (!hasSection(x, y + 1) && !hasSection(x + 1, y + 1) && !hasSection(x - 1, y + 1)) {
-            available.add(new int[] {x, y + 1});
+            available.add(new int[]{x, y + 1});
         }
         if (!hasSection(x + 1, y) && !hasSection(x + 1, y + 1) && !hasSection(x + 1, y - 1)) {
-            available.add(new int[] {x + 1, y});
+            available.add(new int[]{x + 1, y});
         }
         if (!hasSection(x, y - 1) && !hasSection(x + 1, y - 1) && !hasSection(x - 1, y - 1)) {
-            available.add(new int[] {x, y - 1});
+            available.add(new int[]{x, y - 1});
         }
         if (!hasSection(x - 1, y) && !hasSection(x - 1, y + 1) && !hasSection(x - 1, y - 1)) {
-            available.add(new int[] {x - 1, y});
+            available.add(new int[]{x - 1, y});
         }
 
-        for (int[] xy: available) {
+        for (int[] xy : available) {
             float value = random.nextFloat();
 
             if (value < chance) {
@@ -215,7 +170,64 @@ public class LevelGenerator implements Iterable<LevelGenerator.Section> {
         return sections.values().iterator();
     }
 
-    private static String getSectionName(int x, int y) {
-        return x + ":" + y;
+    public enum Type {
+        TopEnd,
+        RightEnd,
+        BottomEnd,
+        LeftEnd,
+
+        TopRightTurn,
+        TopLeftTurn,
+        BottomRightTurn,
+        BottomLeftTurn,
+
+        VerticalLeftThreeWay,
+        VerticalRightThreeWay,
+        HorizontalTopThreeWay,
+        HorizontalBottomThreeWay,
+
+        Vertical,
+        Horizontal,
+
+        FourWay,
+    }
+
+    public class Section {
+        private int x;
+        private int y;
+        private float chance;
+        private Type type;
+        private String name;
+
+        public Section(int x, int y) {
+            this.x = x;
+            this.y = y;
+            this.type = null;
+            this.name = LevelGenerator.getSectionName(x, y);
+        }
+
+        public int getX() {
+            return x;
+        }
+
+        public int getY() {
+            return y;
+        }
+
+        public float getChance() {
+            return chance;
+        }
+
+        public Type getType() {
+            return type;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public String toString() {
+            return getType() + " " + getName();
+        }
     }
 }

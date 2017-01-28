@@ -1,9 +1,6 @@
 package io.faucette.zombierampage;
 
 
-import java.util.ArrayList;
-import java.util.List;
-
 import io.faucette.camera_component.Camera;
 import io.faucette.camera_component.CameraManager;
 import io.faucette.math.Vec2;
@@ -16,27 +13,16 @@ import io.faucette.transform_components.Transform2D;
 public class AnalogControl extends Component {
 
 
-    public enum Side {
-        Left,
-        Right
-    }
-
-
     private static long leftTouchId = -1;
     private static long rightTouchId = -1;
-
     private static float MAX_SIZE = 0.25f;
     private static float OFFSET = 0.6f;
-
-
     public Vec2 analog;
     private Vec2 tmp;
     private Side side;
     private boolean dragging;
     private float screenWidth;
     private float screenHeight;
-
-
     public AnalogControl(Side s) {
         super();
 
@@ -60,6 +46,7 @@ public class AnalogControl extends Component {
             return -1;
         }
     }
+
     private void setTouchIdUsed(long id) {
         if (side == Side.Left) {
             leftTouchId = id;
@@ -164,5 +151,10 @@ public class AnalogControl extends Component {
         tmp.smul(0.5f);
 
         return this;
+    }
+
+    public enum Side {
+        Left,
+        Right
     }
 }

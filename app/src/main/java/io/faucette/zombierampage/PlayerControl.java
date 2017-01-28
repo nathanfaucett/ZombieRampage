@@ -9,7 +9,6 @@ import io.faucette.scene_graph.Scene;
 public class PlayerControl extends Component {
     private static float MIN_ANALOG_INPUT = 0.01f;
     private Vec2 velocity = new Vec2();
-    private float speed = 0.25f;
 
 
     public PlayerControl() {
@@ -23,7 +22,7 @@ public class PlayerControl extends Component {
         AnalogControl leftAnalog = scene.getEntity("left_analog").getComponent(AnalogControl.class);
         AnalogControl rightAnalog = scene.getEntity("right_analog").getComponent(AnalogControl.class);
 
-        Vec2.smul(velocity, leftAnalog.analog, speed);
+        Vec2.smul(velocity, leftAnalog.analog, entity.getComponent(StatusControl.class).getSpeed());
 
         RigidBody rigidBody = entity.getComponent(RigidBody.class);
         rigidBody.velocity.add(velocity);

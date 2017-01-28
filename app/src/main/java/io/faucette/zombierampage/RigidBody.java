@@ -19,51 +19,43 @@ public class RigidBody extends Component {
     private Type type;
     private AABB2 aabb;
     private List<Shape> shapes;
-
-
-    public enum Type {
-        Static,
-        Dynamic
-    }
-
-    public static class Shape {
-        public AABB2 aabb;
-        public AABB2 localAABB;
-        private RigidBody body;
-
-        public Shape(float w, float h) {
-            aabb = new AABB2();
-            localAABB = new AABB2();
-            localAABB.min.set(-w/2, -h/2);
-            localAABB.max.set(w/2, h/2);
-        }
-        public Shape(Vec2 position, float w, float h) {
-            aabb = new AABB2();
-            localAABB = new AABB2();
-            localAABB.fromCenterSize(position, new Vec2(w, h));
-        }
-
-        public Shape update(Vec2 position) {
-            aabb.copy(localAABB);
-            aabb.min.add(position);
-            aabb.max.add(position);
-            return this;
-        }
-
-        public RigidBody getBody() { return body; }
-    }
-
+    private List<OnCollision> onCollisions;
 
     public RigidBody(Type t) {
         super();
-        damping = 0.25f;
+        damping = 0.2f;
         velocity = new Vec2();
         type = t;
         aabb = new AABB2();
         shapes = new ArrayList<>();
+        onCollisions = new ArrayList<>();
     }
+
+
     public RigidBody() {
         this(Type.Static);
+    }
+
+    public RigidBody addOnCollision(OnCollision onCollision) {
+        onCollisions.add(onCollision);
+        return this;
+    }
+
+    public RigidBody removeOnCollision(OnCollision onCollision) {
+        onCollisions.remove(onCollision);
+        return this;
+    }
+
+    public RigidBody emitOnCollision(RigidBody other) {
+        for (OnCollision onCollision : onCollisions) {
+            onCollision.onCollision(other);
+        }
+        return this;
+    }
+
+    public RigidBody setDamping(float damping) {
+        this.damping = damping;
+        return this;
     }
 
     public RigidBody addShape(Shape shape) {
@@ -71,22 +63,25 @@ public class RigidBody extends Component {
         shapes.add(shape);
         return this;
     }
-    public RigidBody setShapes(Iterable<Shape> s) {
-        for (Shape shape: s) {
-            shape.body = this;
-            shapes.add(shape);
-        }
-        return this;
-    }
 
     public Type getType() {
         return type;
     }
+
     public AABB2 getAABB() {
         return aabb;
     }
+
     public List<Shape> getShapes() {
         return shapes;
+    }
+
+    public RigidBody setShapes(Iterable<Shape> s) {
+        for (Shape shape : s) {
+            shape.body = this;
+            shapes.add(shape);
+        }
+        return this;
     }
 
     @Override
@@ -94,12 +89,12 @@ public class RigidBody extends Component {
         Transform2D transform2D = entity.getComponent(Transform2D.class);
         Vec2 position = transform2D.getLocalPosition();
 
-        for (Shape shape: shapes) {
+        for (Shape shape : shapes) {
             shape.update(position);
             aabb.union(shape.aabb);
         }
 
-        if (type == Type.Dynamic) {
+        if (type != Type.Static) {
             Entity entity = getEntity();
             Scene scene = entity.getScene();
             float delta = (float) scene.getTime().getDelta();
@@ -126,8 +121,61 @@ public class RigidBody extends Component {
     public Class<? extends ComponentManager> getComponentManagerClass() {
         return RigidBodyManager.class;
     }
+
     @Override
     public ComponentManager createComponentManager() {
         return new RigidBodyManager();
+    }
+
+    public enum Type {
+        Static,
+        Dynamic,
+        Kinematic
+    }
+
+    public interface OnCollision {
+        void onCollision(RigidBody other);
+    }
+
+    public static class Shape {
+        public AABB2 aabb;
+        public AABB2 localAABB;
+        private RigidBody body;
+        private boolean isTrigger;
+
+        public Shape(float w, float h) {
+            aabb = new AABB2();
+            localAABB = new AABB2();
+            localAABB.min.set(-w / 2, -h / 2);
+            localAABB.max.set(w / 2, h / 2);
+            isTrigger = false;
+        }
+
+        public Shape(Vec2 position, float w, float h) {
+            aabb = new AABB2();
+            localAABB = new AABB2();
+            localAABB.fromCenterSize(position, new Vec2(w, h));
+            isTrigger = false;
+        }
+
+        public boolean getIsTrigger() {
+            return isTrigger;
+        }
+
+        public Shape setIsTrigger(boolean isTrigger) {
+            this.isTrigger = isTrigger;
+            return this;
+        }
+
+        public Shape update(Vec2 position) {
+            aabb.copy(localAABB);
+            aabb.min.add(position);
+            aabb.max.add(position);
+            return this;
+        }
+
+        public RigidBody getBody() {
+            return body;
+        }
     }
 }

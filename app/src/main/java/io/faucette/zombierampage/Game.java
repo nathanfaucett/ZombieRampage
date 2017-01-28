@@ -4,6 +4,7 @@ package io.faucette.zombierampage;
 import java.util.Comparator;
 import java.util.Random;
 
+import io.faucette.scene_graph.Entity;
 import io.faucette.scene_graph.Scene;
 import io.faucette.sprite_component.Sprite;
 import io.faucette.sprite_component.SpriteManager;
@@ -15,10 +16,10 @@ public class Game {
 
 
     public Game() {
-        createGame();
+        setScene(createGameScene());
     }
 
-    private void createGame() {
+    private Scene createGameScene() {
         Scene scene = new Scene();
 
         scene.addPlugin(new InputPlugin());
@@ -40,17 +41,13 @@ public class Game {
         LevelGenerator level = new LevelGenerator();
         Random rand = new Random();
         float size = 2f;
-        for (LevelGenerator.Section section: level) {
+        for (LevelGenerator.Section section : level) {
             scene.addEntity(Entities.createTile(section, size));
-
-            for (int i = 0; i < 5; i++) {
-                float x = ((section.getX() * size) - (size * 0.5f)) + (rand.nextFloat() * size);
-                float y = ((section.getY() * size) - (size * 0.5f)) + (rand.nextFloat() * size);
-                scene.addEntity(Entities.createEnemy(x, y));
-            }
         }
 
-        setScene(scene);
+        scene.addEntity(new Entity().addComponent(new EnemySpawn()));
+
+        return scene;
     }
 
     public void setScene(Scene s) {
