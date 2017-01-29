@@ -48,7 +48,7 @@ public class RigidBody extends Component {
 
     public RigidBody emitOnCollision(RigidBody other) {
         for (OnCollision onCollision : onCollisions) {
-            onCollision.onCollision(other);
+            onCollision.onCollision(this, other);
         }
         return this;
     }
@@ -66,6 +66,10 @@ public class RigidBody extends Component {
 
     public Type getType() {
         return type;
+    }
+    public RigidBody setType(Type type) {
+        this.type = type;
+        return this;
     }
 
     public AABB2 getAABB() {
@@ -134,7 +138,7 @@ public class RigidBody extends Component {
     }
 
     public interface OnCollision {
-        void onCollision(RigidBody other);
+        void onCollision(RigidBody self, RigidBody other);
     }
 
     public static class Shape {

@@ -29,15 +29,9 @@ public class SpriteAnimation extends Component {
     public SpriteAnimation update() {
         float[][] frames = animations.get(animation);
 
-        if (frames != null) {
-            float[] frame = frames[currentFrame];
+        if (frames != null && currentFrame < frames.length) {
+            float[] frame = setCurrentFrame(frames);
             double now = getEntity().getScene().getTime().getCurrent();
-
-            Sprite sprite = getEntity().getComponent(Sprite.class);
-            sprite.setX(frame[0]);
-            sprite.setY(frame[1]);
-            sprite.setW(frame[2]);
-            sprite.setH(frame[3]);
 
             if (frame[4] != 0f) {
                 if (speed * frame[4] < (float) (now - frameStartTime)) {
@@ -55,8 +49,30 @@ public class SpriteAnimation extends Component {
         return this;
     }
 
+    private float[] setCurrentFrame(float[][] frames) {
+        float[] frame = frames[currentFrame];
+        Sprite sprite = getEntity().getComponent(Sprite.class);
+        sprite.setX(frame[0]);
+        sprite.setY(frame[1]);
+        sprite.setW(frame[2]);
+        sprite.setH(frame[3]);
+        return frame;
+    }
+
     public SpriteAnimation play(String animation) {
+
+        if (!this.animation.equals(animation)) {
+            frameStartTime = 0f;
+            currentFrame = 0;
+
+            float[][] frames = animations.get(animation);
+            if (frames != null && currentFrame < frames.length) {
+                setCurrentFrame(frames);
+            }
+        }
+
         this.animation = animation;
+
         return this;
     }
 

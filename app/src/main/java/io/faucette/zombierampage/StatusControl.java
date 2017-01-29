@@ -23,6 +23,7 @@ public class StatusControl extends Component {
     private float deadTimeCurrent = 0f;
     public StatusControl(int hp, int pp, float speed, float birthTime, float hitTime, float deadTime) {
         this.hp = hp;
+        this.pp = pp;
         this.speed = speed;
         this.birthTime = birthTime;
         this.hitTime = hitTime;
@@ -30,37 +31,32 @@ public class StatusControl extends Component {
         state = State.Birth;
     }
 
-    public StatusControl(int hp, int pp, float speed) {
-        this(hp, pp, speed, 1f, 0.25f, 1f);
+    public StatusControl(int hp, int pp, float speed, float birthTime) {
+        this(hp, pp, speed, birthTime, 0.25f, 1f);
     }
-
-    public StatusControl() {
-        this(100, 100, 0.25f);
+    public StatusControl(int hp, int pp, float speed) {
+        this(hp, pp, speed, 2f);
     }
 
     public float getSpeed() {
         return speed;
     }
+    public State getState() { return state; }
 
     public void takeDamage(int amount) {
         if (state != State.Hit && state != State.Dead) {
             hp -= amount;
-            SpriteAnimation spriteAnimation = entity.getComponent(SpriteAnimation.class);
 
             if (hp <= 0) {
-                state = State.Dead;
-                spriteAnimation.play("die");
-                spriteAnimation.setSpeed(1f);
+                state = State.Dying;
             } else {
                 state = State.Hit;
-                spriteAnimation.play("hit");
-                spriteAnimation.setSpeed(1f);
             }
         }
     }
 
     public void attack(StatusControl other) {
-        int base = (int) (pp * 0.75f);
+        int base = (int) (pp * 0.5f);
         int amount = base + ((int) (random.nextFloat() * (pp - base)));
         other.takeDamage(amount);
     }
@@ -70,15 +66,6 @@ public class StatusControl extends Component {
         float dt = (float) entity.getScene().getTime().getDelta();
 
         switch (state) {
-            case Birth: {
-                birthTimeCurrent += dt;
-
-                if (birthTimeCurrent >= birthTime) {
-                    birthTimeCurrent = 0f;
-                    state = State.Alive;
-                }
-                break;
-            }
             case Alive: {
                 break;
             }
@@ -91,12 +78,21 @@ public class StatusControl extends Component {
                 }
                 break;
             }
-            case Dead: {
+            case Dying: {
                 deadTimeCurrent += dt;
 
                 if (deadTimeCurrent >= deadTime) {
                     deadTimeCurrent = 0f;
-                    entity.getScene().removeEntity(entity);
+                    state = State.Dead;
+                }
+                break;
+            }
+            case Birth: {
+                birthTimeCurrent += dt;
+
+                if (birthTimeCurrent >= birthTime) {
+                    birthTimeCurrent = 0f;
+                    state = State.Alive;
                 }
                 break;
             }
@@ -108,6 +104,7 @@ public class StatusControl extends Component {
         Birth,
         Alive,
         Hit,
+        Dying,
         Dead,
     }
 }

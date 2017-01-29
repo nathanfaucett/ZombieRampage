@@ -17,23 +17,28 @@ public class PlayerControl extends Component {
 
     @Override
     public PlayerControl update() {
-        Entity entity = getEntity();
-        Scene scene = entity.getScene();
-        AnalogControl leftAnalog = scene.getEntity("left_analog").getComponent(AnalogControl.class);
-        AnalogControl rightAnalog = scene.getEntity("right_analog").getComponent(AnalogControl.class);
+        StatusControl.State state = entity.getComponent(StatusControl.class).getState();
 
-        Vec2.smul(velocity, leftAnalog.analog, entity.getComponent(StatusControl.class).getSpeed());
+        if (state != StatusControl.State.Dying && state != StatusControl.State.Dead) {
+            Scene scene = entity.getScene();
+            AnalogControl leftAnalog = scene.getEntity("left_analog").getComponent(AnalogControl.class);
+            AnalogControl rightAnalog = scene.getEntity("right_analog").getComponent(AnalogControl.class);
 
-        RigidBody rigidBody = entity.getComponent(RigidBody.class);
-        rigidBody.velocity.add(velocity);
+            Vec2.smul(velocity, leftAnalog.analog, entity.getComponent(StatusControl.class).getSpeed());
 
-        DirectionControl directionControl = entity.getComponent(DirectionControl.class);
+            RigidBody rigidBody = entity.getComponent(RigidBody.class);
+            rigidBody.velocity.add(velocity);
 
-        if (rightAnalog.analog.length() > MIN_ANALOG_INPUT) {
-            Vec2.normalize(directionControl.direction, rightAnalog.analog);
-            directionControl.fromVelocity = false;
+            AnimationControl animationControl = entity.getComponent(AnimationControl.class);
+
+            if (rightAnalog.analog.length() > MIN_ANALOG_INPUT) {
+                Vec2.normalize(animationControl.direction, rightAnalog.analog);
+                animationControl.fromVelocity = false;
+            } else {
+                animationControl.fromVelocity = true;
+            }
         } else {
-            directionControl.fromVelocity = true;
+            entity.getComponent(RigidBody.class).setType(RigidBody.Type.Static);
         }
 
         return this;

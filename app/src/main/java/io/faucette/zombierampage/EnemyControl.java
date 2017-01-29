@@ -8,7 +8,7 @@ import io.faucette.transform_components.Transform2D;
 
 
 public class EnemyControl extends Component {
-    private static float MIN_PLAYER_DISTANCE = 2f;
+    private static float MIN_PLAYER_DISTANCE = 1f;
     private static float MIN_TILE_DISTANCE = 0.5f;
 
     private TileControl prevTile = null;
@@ -24,25 +24,33 @@ public class EnemyControl extends Component {
 
     @Override
     public EnemyControl update() {
-        Vec2 position = entity.getComponent(Transform2D.class).getPosition();
-        Vec2.sub(
-                playerDistance,
-                entity.getScene().getEntity("player").getComponent(Transform2D.class).getPosition(),
-                position
-        );
-        float distance = Vec2.normalize(direction, playerDistance);
+        StatusControl statusControl = entity.getComponent(StatusControl.class);
 
-        if (distance > MIN_PLAYER_DISTANCE) {
-            Scene scene = entity.getScene();
-            TileControlManager tileControlManager = scene.getComponentManager(TileControlManager.class);
-            TileControl tile = tileControlManager.find(position);
+        if (statusControl.getState() == StatusControl.State.Alive) {
+            entity.getComponent(RigidBody.class).setType(RigidBody.Type.Dynamic);
 
-            if (tile != null) {
-                followPlayer(tileControlManager, tile, position);
+            Vec2 position = entity.getComponent(Transform2D.class).getPosition();
+            Vec2.sub(
+                    playerDistance,
+                    entity.getScene().getEntity("player").getComponent(Transform2D.class).getPosition(),
+                    position
+            );
+            float distance = Vec2.normalize(direction, playerDistance);
+
+            if (distance > MIN_PLAYER_DISTANCE) {
+                Scene scene = entity.getScene();
+                TileControlManager tileControlManager = scene.getComponentManager(TileControlManager.class);
+                TileControl tile = tileControlManager.find(position);
+
+                if (tile != null) {
+                    followPlayer(tileControlManager, tile, position);
+                }
             }
+        } else if (statusControl.getState() == StatusControl.State.Birth) {
+            entity.getComponent(RigidBody.class).setType(RigidBody.Type.Static);
         }
 
-        Vec2.smul(velocity, direction, entity.getComponent(StatusControl.class).getSpeed());
+        Vec2.smul(velocity, direction, statusControl.getSpeed());
         entity.getComponent(RigidBody.class).velocity.add(velocity);
 
         return this;

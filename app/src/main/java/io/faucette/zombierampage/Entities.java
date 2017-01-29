@@ -15,6 +15,7 @@ import io.faucette.transform_components.Transform2D;
 
 public class Entities {
     public static HashMap<String, float[][]> animations = new HashMap<>();
+    public static HashMap<String, float[][]> enemyAnimations = new HashMap<>();
 
     public static int BG_LAYER = 0;
     public static int LAYER = 1;
@@ -28,16 +29,16 @@ public class Entities {
                 .addComponent(new Sprite()
                         .setLayer(MENU_LAYER)
                         .setLocal(true)
-                        .setWidth(0.5f)
-                        .setHeight(0.5f)
+                        .setWidth(0.75f)
+                        .setHeight(0.75f)
                         .setImage(R.drawable.analog))
                 .addChild(new Entity()
                         .addComponent(new Transform2D())
                         .addComponent(new Sprite()
                                 .setLayer(MENU_LAYER)
                                 .setLocal(true)
-                                .setWidth(0.25f)
-                                .setHeight(0.25f)
+                                .setWidth(0.375f)
+                                .setHeight(0.375f)
                                 .setImage(R.drawable.analog)));
     }
 
@@ -45,9 +46,9 @@ public class Entities {
         return new Entity("player")
                 .setTag("player")
                 .addComponent(new Transform2D())
-                .addComponent(new StatusControl(100, 0, 0.2f))
+                .addComponent(new StatusControl(100, 0, 0.2f, 0f))
                 .addComponent(new PlayerControl())
-                .addComponent(new DirectionControl())
+                .addComponent(new AnimationControl())
                 .addComponent(new RigidBody(RigidBody.Type.Dynamic)
                         .addShape(new RigidBody.Shape(new Vec2(0f, -0.0625f), 0.2f, 0.125f)))
                 .addComponent(new SpriteAnimation(animations, "down"))
@@ -58,35 +59,37 @@ public class Entities {
                         .setImage(R.drawable.player));
     }
 
-    public static Entity createEnemy(float x, float y) {
+    public static Entity createRegEnemy(float x, float y) {
         return new Entity()
+                .setTag("enemy")
                 .addComponent(new Transform2D()
                         .setPosition(new Vec2(x, y)))
-                .addComponent(new StatusControl(100, 20, 0.1f))
+                .addComponent(new StatusControl(100, 10, 0.1f))
                 .addComponent(new EnemyControl())
-                .addComponent(new DirectionControl())
+                .addComponent(new AnimationControl())
                 .addComponent(new RigidBody(RigidBody.Type.Dynamic)
                         .addOnCollision(new RigidBody.OnCollision() {
                             @Override
-                            public void onCollision(RigidBody other) {
+                            public void onCollision(RigidBody self, RigidBody other) {
                                 if (other.getEntity().compareTag("player")) {
-                                    System.out.println("HIT THE PLAYER!!");
+                                    self.getEntity().getComponent(StatusControl.class)
+                                            .attack(other.getEntity().getComponent(StatusControl.class));
                                 }
                             }
                         })
                         .addShape(new RigidBody.Shape(new Vec2(0f, -0.0625f), 0.2f, 0.125f)))
-                .addComponent(new SpriteAnimation(animations, "down"))
+                .addComponent(new SpriteAnimation(enemyAnimations, "down"))
                 .addComponent(new Sprite()
                         .setLayer(LAYER)
                         .setWidth(0.25f)
                         .setHeight(0.25f)
-                        .setImage(R.drawable.player));
+                        .setImage(R.drawable.reg_enemy));
     }
 
     public static Entity createCamera() {
         return new Entity("camera")
                 .addComponent(new Camera()
-                        .setOrthographicSize(1f)
+                        .setOrthographicSize(1.5f)
                         .setBackground(new Vec4(0f, 0f, 0f, 1f)))
                 .addComponent(new Transform2D())
                 .addComponent(new CameraControl());
@@ -98,6 +101,7 @@ public class Entities {
         float y = section.getY();
 
         return new Entity()
+                .setTag("tile")
                 .addComponent(new TileControl(section, size))
                 .addComponent(new RigidBody()
                         .setShapes(Entities.getShapes(type, size)))
@@ -247,50 +251,61 @@ public class Entities {
         return 0;
     }
 
-    public static HashMap<String, float[][]> initAnimations() {
+    public static void initAnimations() {
+        putBasicAnimations(animations, 1f / 20f);
+        putBasicAnimations(enemyAnimations, 1f / 23f);
+        putBirthAnimations(enemyAnimations, 1f / 23f);
+    }
 
+    private static void putBirthAnimations(HashMap<String, float[][]> animations, float size) {
+        animations.put("birth", new float[][]{
+                {size * 20, 0f, size, 1f, 1.5f},
+                {size * 21, 0f, size, 1f, 0.5f},
+                {size * 22, 0f, size, 1f, 0f},
+        });
+    }
+
+    private static void putBasicAnimations(HashMap<String, float[][]> animations, float size) {
         animations.put("down", new float[][]{
-                {0f, 0f, 0.05f, 1f, 1f},
-                {0.05f, 0f, 0.05f, 1f, 1f},
+                {size * 0, 0f, size, 1f, 1f},
+                {size * 1, 0f, size, 1f, 1f},
         });
         animations.put("down_right", new float[][]{
-                {0.10f, 0f, 0.05f, 1f, 1f},
-                {0.15f, 0f, 0.05f, 1f, 1f},
+                {size * 2, 0f, size, 1f, 1f},
+                {size * 3, 0f, size, 1f, 1f},
         });
         animations.put("right", new float[][]{
-                {0.20f, 0f, 0.05f, 1f, 1f},
-                {0.25f, 0f, 0.05f, 1f, 1f},
+                {size * 4, 0f, size, 1f, 1f},
+                {size * 5, 0f, size, 1f, 1f},
         });
         animations.put("up_right", new float[][]{
-                {0.30f, 0f, 0.05f, 1f, 1f},
-                {0.35f, 0f, 0.05f, 1f, 1f},
+                {size * 6, 0f, size, 1f, 1f},
+                {size * 7, 0f, size, 1f, 1f},
         });
         animations.put("up", new float[][]{
-                {0.40f, 0f, 0.05f, 1f, 1f},
-                {0.45f, 0f, 0.05f, 1f, 1f},
+                {size * 8, 0f, size, 1f, 1f},
+                {size * 9, 0f, size, 1f, 1f},
         });
         animations.put("up_left", new float[][]{
-                {0.50f, 0f, 0.05f, 1f, 1f},
-                {0.55f, 0f, 0.05f, 1f, 1f},
+                {size * 10, 0f, size, 1f, 1f},
+                {size * 11, 0f, size, 1f, 1f},
         });
         animations.put("left", new float[][]{
-                {0.60f, 0f, 0.05f, 1f, 1f},
-                {0.65f, 0f, 0.05f, 1f, 1f},
+                {size * 12, 0f, size, 1f, 1f},
+                {size * 13, 0f, size, 1f, 1f},
         });
         animations.put("down_left", new float[][]{
-                {0.70f, 0f, 0.05f, 1f, 1f},
-                {0.75f, 0f, 0.05f, 1f, 1f},
+                {size * 14, 0f, size, 1f, 1f},
+                {size * 15, 0f, size, 1f, 1f},
         });
         animations.put("hit", new float[][]{
-                {0.80f, 0f, 0.05f, 1f, 2f},
+                {size * 16, 0f, size, 1f, 2f},
         });
         animations.put("die", new float[][]{
-                {0.80f, 0f, 0.05f, 1f, 1f},
-                {0.85f, 0f, 0.05f, 1f, 1f},
-                {0.90f, 0f, 0.05f, 1f, 1f},
-                {0.95f, 0f, 0.05f, 1f, 0f},
+                {size * 16, 0f, size, 1f, 1f},
+                {size * 17, 0f, size, 1f, 1f},
+                {size * 18, 0f, size, 1f, 1f},
+                {size * 19, 0f, size, 1f, 0f},
         });
-
-        return animations;
     }
 }

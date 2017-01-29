@@ -15,8 +15,8 @@ public class AnalogControl extends Component {
 
     private static long leftTouchId = -1;
     private static long rightTouchId = -1;
-    private static float MAX_SIZE = 0.25f;
-    private static float OFFSET = 0.6f;
+    private static float MAX_SIZE = 0.375f;
+    private static float OFFSET = 0.75f;
     public Vec2 analog;
     private Vec2 tmp;
     private Side side;

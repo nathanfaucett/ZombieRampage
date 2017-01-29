@@ -13,7 +13,7 @@ public class EnemySpawn extends Component {
 
     private int total = 16;
     private float currentTime = 0f;
-    private float rate = 5f;
+    private float rate = 4f;
 
 
     public EnemySpawn() {
@@ -50,6 +50,6 @@ public class EnemySpawn extends Component {
         float x = ((tile.getX() * size) - (smallSize * 0.5f)) + (random.nextFloat() * smallSize);
         float y = ((tile.getY() * size) - (smallSize * 0.5f)) + (random.nextFloat() * smallSize);
 
-        scene.addEntity(Entities.createEnemy(x, y));
+        scene.addEntity(Entities.createRegEnemy(x, y));
     }
 }
