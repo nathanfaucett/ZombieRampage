@@ -8,7 +8,7 @@ import io.faucette.transform_components.Transform2D;
 
 
 public class EnemyControl extends Component {
-    private static float MIN_PLAYER_DISTANCE = 1f;
+    private static float MIN_PLAYER_DISTANCE = 1.5f;
     private static float MIN_TILE_DISTANCE = 0.5f;
 
     private TileControl prevTile = null;
