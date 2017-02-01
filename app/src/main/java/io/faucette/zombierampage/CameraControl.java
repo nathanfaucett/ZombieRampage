@@ -20,9 +20,14 @@ public class CameraControl extends Component {
     public CameraControl update() {
         Entity entity = getEntity();
         Scene scene = entity.getScene();
-        Transform2D playerTransform = scene.getEntity("player").getComponent(Transform2D.class);
-        Transform2D transform = entity.getComponent(Transform2D.class);
-        transform.setPosition(playerTransform.getPosition());
+        Entity player = scene.getEntity("player");
+
+        if (player != null) {
+            Transform2D playerTransform = player.getComponent(Transform2D.class);
+            Transform2D transform = entity.getComponent(Transform2D.class);
+            transform.setPosition(playerTransform.getPosition());
+        }
+
         return this;
     }
 }

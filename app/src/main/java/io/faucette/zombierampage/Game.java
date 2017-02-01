@@ -2,7 +2,6 @@ package io.faucette.zombierampage;
 
 
 import java.util.Comparator;
-import java.util.Random;
 
 import io.faucette.scene_graph.Entity;
 import io.faucette.scene_graph.Scene;
@@ -39,7 +38,6 @@ public class Game {
         });
 
         LevelGenerator level = new LevelGenerator();
-        Random rand = new Random();
         float size = 2f;
         for (LevelGenerator.Section section : level) {
             scene.addEntity(Entities.createTile(section, size));

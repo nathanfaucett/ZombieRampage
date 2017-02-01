@@ -20,6 +20,7 @@ public class RigidBody extends Component {
     private AABB2 aabb;
     private List<Shape> shapes;
     private List<OnCollision> onCollisions;
+    private boolean disabled;
 
     public RigidBody(Type t) {
         super();
@@ -29,6 +30,7 @@ public class RigidBody extends Component {
         aabb = new AABB2();
         shapes = new ArrayList<>();
         onCollisions = new ArrayList<>();
+        disabled = false;
     }
 
 
@@ -67,8 +69,14 @@ public class RigidBody extends Component {
     public Type getType() {
         return type;
     }
+
     public RigidBody setType(Type type) {
         this.type = type;
+        return this;
+    }
+
+    public RigidBody addVelocity(Vec2 velocity) {
+        this.velocity.add(velocity);
         return this;
     }
 
@@ -129,6 +137,14 @@ public class RigidBody extends Component {
     @Override
     public ComponentManager createComponentManager() {
         return new RigidBodyManager();
+    }
+
+    public RigidBody setDisabled(boolean disabled) {
+        this.disabled = disabled;
+        return this;
+    }
+    public boolean isDisabled() {
+        return disabled;
     }
 
     public enum Type {

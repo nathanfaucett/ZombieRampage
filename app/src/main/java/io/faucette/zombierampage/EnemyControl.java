@@ -3,6 +3,7 @@ package io.faucette.zombierampage;
 
 import io.faucette.math.Vec2;
 import io.faucette.scene_graph.Component;
+import io.faucette.scene_graph.Entity;
 import io.faucette.scene_graph.Scene;
 import io.faucette.transform_components.Transform2D;
 
@@ -25,16 +26,21 @@ public class EnemyControl extends Component {
     @Override
     public EnemyControl update() {
         StatusControl statusControl = entity.getComponent(StatusControl.class);
+        StatusControl.State state = statusControl.getState();
 
-        if (statusControl.getState() == StatusControl.State.Alive) {
+        if (state == StatusControl.State.Alive) {
             entity.getComponent(RigidBody.class).setType(RigidBody.Type.Dynamic);
 
             Vec2 position = entity.getComponent(Transform2D.class).getPosition();
-            Vec2.sub(
-                    playerDistance,
-                    entity.getScene().getEntity("player").getComponent(Transform2D.class).getPosition(),
-                    position
-            );
+            Entity player = entity.getScene().getEntity("player");
+
+            if (player != null) {
+                Vec2.sub(
+                        playerDistance,
+                        entity.getScene().getEntity("player").getComponent(Transform2D.class).getPosition(),
+                        position
+                );
+            }
             float distance = Vec2.normalize(direction, playerDistance);
 
             if (distance > MIN_PLAYER_DISTANCE) {
@@ -46,7 +52,8 @@ public class EnemyControl extends Component {
                     followPlayer(tileControlManager, tile, position);
                 }
             }
-        } else if (statusControl.getState() == StatusControl.State.Birth) {
+        } else if (state == StatusControl.State.Birth || state == StatusControl.State.Dying || state == StatusControl.State.Dead) {
+            velocity.set(0f, 0f);
             entity.getComponent(RigidBody.class).setType(RigidBody.Type.Static);
         }
 

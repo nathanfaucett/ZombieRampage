@@ -6,7 +6,7 @@ import io.faucette.scene_graph.Component;
 
 
 public class AnimationControl extends Component {
-    private static float MIN_SPEED = 0.05f;
+    private static float MIN_SPEED = 0.1f;
     public Vec2 direction = new Vec2();
     public boolean fromVelocity = true;
     private Mathf.Direction dir = Mathf.Direction.UP;

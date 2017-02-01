@@ -46,7 +46,7 @@ public class EnemySpawn extends Component {
         int index = (int) (random.nextFloat() * ((float) tiles.size()));
         TileControl tile = tiles.get(index);
         float size = tile.getSize();
-        float smallSize = size * 0.75f;
+        float smallSize = size * 0.9f;
         float x = ((tile.getX() * size) - (smallSize * 0.5f)) + (random.nextFloat() * smallSize);
         float y = ((tile.getY() * size) - (smallSize * 0.5f)) + (random.nextFloat() * smallSize);
 

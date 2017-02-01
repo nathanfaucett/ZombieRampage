@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "791372421318",
+    "firebase_url": "https://zombierampage-a5997.firebaseio.com",
+    "project_id": "zombierampage-a5997",
+    "storage_bucket": "zombierampage-a5997.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:791372421318:android:8e8bf693da15eeeb",
+        "android_client_info": {
+          "package_name": "io.faucette.zombierampage"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "791372421318-a1fn2qf1f7j0a1gd57oe8vm1d81ik47u.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "io.faucette.zombierampage",
+            "certificate_hash": "24689D3BBC7A1A77C974158E4BEFCE905F036E25"
+          }
+        },
+        {
+          "client_id": "791372421318-g17j9eg8n76k9vptv8ve54q1k2p73sns.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCzIr8-G_N5050bzj88eIWiSgFd2tomO5M"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "791372421318-g17j9eg8n76k9vptv8ve54q1k2p73sns.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

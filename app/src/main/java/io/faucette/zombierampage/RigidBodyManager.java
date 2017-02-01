@@ -65,7 +65,7 @@ public class RigidBodyManager extends ComponentManager {
                 RigidBody a = (RigidBody) components.get(i);
                 RigidBody b = (RigidBody) components.get(j);
 
-                if (a.getType() != RigidBody.Type.Dynamic && b.getType() != RigidBody.Type.Dynamic) {
+                if (a.isDisabled() || b.isDisabled()) {
                     continue;
                 }
 

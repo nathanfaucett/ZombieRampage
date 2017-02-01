@@ -58,8 +58,8 @@ public class TileControlManager extends ComponentManager {
     }
 
     public TileControl find(float x, float y) {
-        int ix = (int) Math.round(x / size);
-        int iy = (int) Math.round(y / size);
+        int ix = Math.round(x / size);
+        int iy = Math.round(y / size);
         String id = ix + ":" + iy;
         return tileMap.get(id);
     }

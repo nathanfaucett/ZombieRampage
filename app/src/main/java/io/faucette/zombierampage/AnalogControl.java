@@ -23,6 +23,7 @@ public class AnalogControl extends Component {
     private boolean dragging;
     private float screenWidth;
     private float screenHeight;
+
     public AnalogControl(Side s) {
         super();
 

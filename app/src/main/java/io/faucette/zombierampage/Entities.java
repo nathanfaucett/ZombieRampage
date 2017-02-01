@@ -50,13 +50,46 @@ public class Entities {
                 .addComponent(new PlayerControl())
                 .addComponent(new AnimationControl())
                 .addComponent(new RigidBody(RigidBody.Type.Dynamic)
-                        .addShape(new RigidBody.Shape(new Vec2(0f, -0.0625f), 0.2f, 0.125f)))
+                        .addShape(new RigidBody.Shape(new Vec2(0f, -0.0625f), 0.125f, 0.125f)))
                 .addComponent(new SpriteAnimation(animations, "down"))
                 .addComponent(new Sprite()
                         .setLayer(LAYER)
                         .setWidth(0.25f)
                         .setHeight(0.25f)
                         .setImage(R.drawable.player));
+    }
+
+    public static Entity createBullet(Vec2 position, Vec2 direction, float speed, final int pp) {
+        return new Entity()
+                .setTag("bullet")
+                .addComponent(new Transform2D()
+                    .setPosition(position)
+                    .setRotation((float) (Math.atan2(direction.y, direction.x) - (Math.PI * 0.5))))
+                .addComponent(new RigidBody(RigidBody.Type.Kinematic)
+                        .setDamping(0f)
+                        .addVelocity(new Vec2(direction.x * speed, direction.y * speed))
+                        .addOnCollision(new RigidBody.OnCollision() {
+                            @Override
+                            public void onCollision(RigidBody self, RigidBody other) {
+                                Entity otherEntity = other.getEntity();
+
+                                if (otherEntity.compareTag("enemy")) {
+                                    otherEntity.getComponent(StatusControl.class).takeDamage(pp);
+                                    Entity entity = self.getEntity();
+                                    entity.getScene().removeEntity(entity);
+                                } else if (otherEntity.compareTag("tile")) {
+                                    Entity entity = self.getEntity();
+                                    entity.getScene().removeEntity(entity);
+                                }
+                            }
+                        })
+                        .addShape(new RigidBody.Shape(0.046875f, 0.046875f)
+                                .setIsTrigger(true)))
+                .addComponent(new Sprite()
+                        .setLayer(LAYER)
+                        .setWidth(0.046875f)
+                        .setHeight(0.234375f)
+                        .setImage(R.drawable.bullet));
     }
 
     public static Entity createRegEnemy(float x, float y) {
@@ -77,7 +110,8 @@ public class Entities {
                                 }
                             }
                         })
-                        .addShape(new RigidBody.Shape(new Vec2(0f, -0.0625f), 0.2f, 0.125f)))
+                        .addShape(new RigidBody.Shape(new Vec2(0f, -0.0625f), 0.125f, 0.125f))
+                        .addShape(new RigidBody.Shape(0.125f, 0.25f).setIsTrigger(true)))
                 .addComponent(new SpriteAnimation(enemyAnimations, "down"))
                 .addComponent(new Sprite()
                         .setLayer(LAYER)
