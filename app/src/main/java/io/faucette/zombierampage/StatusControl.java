@@ -20,6 +20,7 @@ public class StatusControl extends Component {
     private float dyingTime;
     private float deadTime;
     private State state;
+    private boolean allowHitWhileHit = true;
     private float birthTimeCurrent = 0f;
     private float hitTimeCurrent = 0f;
     private float dyingTimeCurrent = 0f;
@@ -44,6 +45,11 @@ public class StatusControl extends Component {
         this(hp, pp, speed, 2f);
     }
 
+    public StatusControl setAllowHitWhileHit(boolean allowHitWhileHit) {
+        this.allowHitWhileHit = allowHitWhileHit;
+        return this;
+    }
+
     public float getSpeed() {
         return speed;
     }
@@ -53,7 +59,7 @@ public class StatusControl extends Component {
     }
 
     public void takeDamage(int amount) {
-        if (state != State.Hit && state != State.Dead) {
+        if ((allowHitWhileHit || state != State.Hit) && state != State.Dead) {
             hp -= amount;
 
             if (hp <= 0) {

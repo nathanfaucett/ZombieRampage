@@ -46,7 +46,8 @@ public class Entities {
         return new Entity("player")
                 .setTag("player")
                 .addComponent(new Transform2D())
-                .addComponent(new StatusControl(100, 0, 0.2f, 0f))
+                .addComponent(new StatusControl(100, 0, 0.2f, 0f)
+                    .setAllowHitWhileHit(false))
                 .addComponent(new PlayerControl())
                 .addComponent(new AnimationControl())
                 .addComponent(new RigidBody(RigidBody.Type.Dynamic)
@@ -90,6 +91,34 @@ public class Entities {
                         .setWidth(0.046875f)
                         .setHeight(0.234375f)
                         .setImage(R.drawable.bullet));
+    }
+
+    public static Entity createShotGunAmmo(Vec2 position) {
+        return new Entity()
+                .setTag("ammo")
+                .addComponent(new Transform2D()
+                        .setPosition(position))
+                .addComponent(new RigidBody(RigidBody.Type.Kinematic)
+                        .addOnCollision(new RigidBody.OnCollision() {
+                            @Override
+                            public void onCollision(RigidBody self, RigidBody other) {
+                                Entity otherEntity = other.getEntity();
+
+                                if (otherEntity.compareTag("player")) {
+                                    otherEntity.getComponent(PlayerControl.class)
+                                            .getAmmo(PlayerControl.GunType.Shotgun);
+                                    Entity entity = self.getEntity();
+                                    entity.getScene().removeEntity(entity);
+                                }
+                            }
+                        })
+                        .addShape(new RigidBody.Shape(0.125f, 0.0625f)
+                                .setIsTrigger(true)))
+                .addComponent(new Sprite()
+                        .setLayer(LAYER)
+                        .setWidth(0.125f)
+                        .setHeight(0.0625f)
+                        .setImage(R.drawable.shotgun_ammo));
     }
 
     public static Entity createRegEnemy(float x, float y) {
