@@ -1,18 +1,17 @@
 package io.faucette.zombierampage;
 
-import java.util.Random;
-
+import io.faucette.math.Vec2;
 import io.faucette.scene_graph.Component;
-import io.faucette.sprite_component.Sprite;
+import io.faucette.scene_graph.Scene;
+import io.faucette.transform_components.Transform2D;
 
 /**
  * Created by nathan on 1/28/17.
  */
 
 public class StatusControl extends Component {
-    private static Random random = new Random();
-
     private int hp;
+    private int maxHp;
     private int pp;
     private float speed;
     private float birthTime;
@@ -21,13 +20,15 @@ public class StatusControl extends Component {
     private float deadTime;
     private State state;
     private boolean allowHitWhileHit = true;
+    private boolean dropItem = true;
+    private float dropChance = 0.5f;
     private float birthTimeCurrent = 0f;
     private float hitTimeCurrent = 0f;
     private float dyingTimeCurrent = 0f;
     private float deadTimeCurrent = 0f;
 
     public StatusControl(int hp, int pp, float speed, float birthTime, float hitTime, float dyingTime, float deadTime) {
-        this.hp = hp;
+        this.maxHp = this.hp = hp;
         this.pp = pp;
         this.speed = speed;
         this.birthTime = birthTime;
@@ -50,12 +51,32 @@ public class StatusControl extends Component {
         return this;
     }
 
+    public StatusControl setDropItem(boolean dropItem) {
+        this.dropItem = dropItem;
+        return this;
+    }
+
+    public StatusControl setDropChance(float dropChance) {
+        this.dropChance = dropChance;
+        return this;
+    }
+
     public float getSpeed() {
         return speed;
     }
 
     public State getState() {
         return state;
+    }
+
+    public void getHealth() {
+        int amount = Utils.health(maxHp);
+
+        if (hp + amount > maxHp) {
+            hp = maxHp;
+        } else {
+            hp += amount;
+        }
     }
 
     public void takeDamage(int amount) {
@@ -107,7 +128,25 @@ public class StatusControl extends Component {
                 deadTimeCurrent += dt;
 
                 if (deadTimeCurrent >= deadTime) {
-                    entity.getScene().removeEntity(entity);
+                    Scene scene = entity.getScene();
+                    scene.removeEntity(entity);
+
+                    if (dropItem && (Math.random() < dropChance)) {
+                        Vec2 position = entity.getComponent(Transform2D.class).getPosition();
+                        float chance = 1f - (float) Math.random();
+
+                        if (chance < 0.75) {
+                            scene.addEntity(Entities.createAmmo(PlayerControl.GunType.Shotgun, position));
+                        } else if (chance < 0.6) {
+                            scene.addEntity(Entities.createAmmo(PlayerControl.GunType.Uzi, position));
+                        } else if (chance < 0.45) {
+                            scene.addEntity(Entities.createHealth(position));
+                        } else if (chance < 0.3) {
+                            scene.addEntity(Entities.createAmmo(PlayerControl.GunType.FlameThrower, position));
+                        } else if (chance < 0.15) {
+                            scene.addEntity(Entities.createAmmo(PlayerControl.GunType.Bazooka, position));
+                        }
+                    }
                 }
                 break;
             }

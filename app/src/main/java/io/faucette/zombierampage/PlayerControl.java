@@ -8,36 +8,23 @@ import io.faucette.transform_components.Transform2D;
 
 public class PlayerControl extends Component {
     private static float MIN_FIRE_INPUT = 0.01f;
-
-    public enum GunType {
-        Pistol,
-        Shotgun,
-        Uzi,
-        FlameThrower,
-        Bazooka,
-    }
-
-    private int shotgunAmmo = -1;
+    private int shotgunAmmo = 0;
     private int uziAmmo = 0;
     private int flamethrowerAmmo = 0;
     private int bazookaAmmo = 0;
-
     private int gunAmmo = 0;
     private float gunFrequencyTime = 0f;
     private float gunFrequency = 0.5f;
     private int gunDamage = 10;
     private float gunSpeed = 2f;
-
     private Vec2 gunDir = new Vec2();
     private GunType gunType = GunType.Pistol;
-
     private Vec2 velocity = new Vec2();
-
 
     public PlayerControl() {
         super();
 
-        setGun(GunType.Shotgun);
+        setGun(GunType.Pistol);
     }
 
     @Override
@@ -70,6 +57,10 @@ public class PlayerControl extends Component {
         }
 
         return this;
+    }
+
+    public void getHealth() {
+        entity.getComponent(StatusControl.class).getHealth();
     }
 
     public void getAmmo(GunType gunType) {
@@ -197,6 +188,7 @@ public class PlayerControl extends Component {
                 )
         );
     }
+
     private void fireShotgun() {
         Scene scene = entity.getScene();
         Vec2 position = entity.getComponent(Transform2D.class).getPosition();
@@ -205,5 +197,13 @@ public class PlayerControl extends Component {
         scene.addEntity(Entities.createBullet(position, gunDir.transform((float) (Math.PI * 0.03125)), gunSpeed, Utils.attack(gunDamage)));
         scene.addEntity(Entities.createBullet(position, gunDir.transform((float) (Math.PI * 0.03125)), gunSpeed, Utils.attack(gunDamage)));
         scene.addEntity(Entities.createBullet(position, gunDir.transform((float) (Math.PI * 0.03125)), gunSpeed, Utils.attack(gunDamage)));
+    }
+
+    public enum GunType {
+        Pistol,
+        Shotgun,
+        Uzi,
+        FlameThrower,
+        Bazooka,
     }
 }

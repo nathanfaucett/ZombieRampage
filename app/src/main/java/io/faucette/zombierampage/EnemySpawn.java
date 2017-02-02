@@ -2,15 +2,12 @@ package io.faucette.zombierampage;
 
 
 import java.util.List;
-import java.util.Random;
 
 import io.faucette.scene_graph.Component;
 import io.faucette.scene_graph.Scene;
 
 
 public class EnemySpawn extends Component {
-    private static Random random = new Random();
-
     private int total = 16;
     private float currentTime = 0f;
     private float rate = 4f;
@@ -43,12 +40,12 @@ public class EnemySpawn extends Component {
         TileControlManager tileControlManager = scene.getComponentManager(TileControlManager.class);
         List<TileControl> tiles = tileControlManager.getTiles();
 
-        int index = (int) (random.nextFloat() * ((float) tiles.size()));
+        int index = (int) (Math.random() * ((float) tiles.size()));
         TileControl tile = tiles.get(index);
         float size = tile.getSize();
         float smallSize = size * 0.9f;
-        float x = ((tile.getX() * size) - (smallSize * 0.5f)) + (random.nextFloat() * smallSize);
-        float y = ((tile.getY() * size) - (smallSize * 0.5f)) + (random.nextFloat() * smallSize);
+        float x = ((tile.getX() * size) - (smallSize * 0.5f)) + ((float) Math.random() * smallSize);
+        float y = ((tile.getY() * size) - (smallSize * 0.5f)) + ((float) Math.random() * smallSize);
 
         scene.addEntity(Entities.createRegEnemy(x, y));
     }

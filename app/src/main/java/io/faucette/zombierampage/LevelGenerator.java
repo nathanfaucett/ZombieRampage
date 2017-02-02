@@ -6,17 +6,14 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 
 public class LevelGenerator implements Iterable<LevelGenerator.Section> {
-    private Random random;
     private float increment;
     private Map<String, Section> sections;
 
 
     public LevelGenerator() {
-        random = new Random(System.currentTimeMillis());
         increment = 0.25f;
         sections = new HashMap<>();
         generate();
@@ -52,7 +49,7 @@ public class LevelGenerator implements Iterable<LevelGenerator.Section> {
         }
 
         for (int[] xy : available) {
-            float value = random.nextFloat();
+            float value = (float) Math.random();
 
             if (value < chance) {
                 Section nextSection = getOrCreateSection(xy[0], xy[1]);

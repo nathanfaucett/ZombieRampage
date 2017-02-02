@@ -3,6 +3,7 @@ package io.faucette.zombierampage;
 
 import java.util.Comparator;
 
+import io.faucette.math.Vec2;
 import io.faucette.scene_graph.Entity;
 import io.faucette.scene_graph.Scene;
 import io.faucette.sprite_component.Sprite;

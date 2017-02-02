@@ -139,12 +139,13 @@ public class RigidBody extends Component {
         return new RigidBodyManager();
     }
 
+    public boolean isDisabled() {
+        return disabled;
+    }
+
     public RigidBody setDisabled(boolean disabled) {
         this.disabled = disabled;
         return this;
-    }
-    public boolean isDisabled() {
-        return disabled;
     }
 
     public enum Type {

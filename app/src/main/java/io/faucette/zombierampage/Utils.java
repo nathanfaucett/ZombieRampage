@@ -1,13 +1,10 @@
 package io.faucette.zombierampage;
 
 
-import java.util.Random;
-
 import io.faucette.math.Vec2;
 
 
 public class Utils {
-    private static Random random = new Random();
 
 
     public static float circleToPoint(Vec2 center, float radias, Vec2 point) {
@@ -24,6 +21,10 @@ public class Utils {
 
     public static int attack(int pp) {
         int base = (int) (pp * 0.5f);
-        return base + ((int) (random.nextFloat() * (pp - base)));
+        return base + ((int) (Math.random() * (pp - base)));
+    }
+    public static int health(int maxHp) {
+        int base = (int) (maxHp * 0.1f);
+        return base + ((int) (Math.random() * base));
     }
 }
