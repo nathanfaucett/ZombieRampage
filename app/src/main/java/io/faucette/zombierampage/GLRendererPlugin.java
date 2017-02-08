@@ -8,16 +8,177 @@ import android.opengl.GLES20;
 import android.opengl.GLUtils;
 import android.util.Log;
 
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.FloatBuffer;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
 import io.faucette.camera_component.CameraManager;
 import io.faucette.math.Mat32;
 import io.faucette.math.Vec4;
+import io.faucette.scene_graph.Scene;
+import io.faucette.scene_renderer.Renderer;
 import io.faucette.scene_renderer.RendererPlugin;
+import io.faucette.scene_renderer.SceneRenderer;
+import io.faucette.ui_component.UIManager;
 
 
 public class GLRendererPlugin extends RendererPlugin {
 
+    private static final String vertexSource =
+            "attribute vec2 position;" +
+                    "attribute vec2 uv;" +
+
+                    "uniform mat4 projection;" +
+                    "uniform mat4 modelView;" +
+                    "uniform vec2 size;" +
+
+                    "varying vec2 vUv;" +
+
+                    "void main() {" +
+                    "  vUv = vec2(uv.x, 1.0 - uv.y);" +
+                    "  gl_Position = projection * modelView * vec4(size * position, 0.0, 1.0);" +
+                    "}";
+    private static final String fragmentSource =
+            "precision mediump float;" +
+
+                    "uniform sampler2D texture;" +
+                    "uniform vec4 clipping;" +
+
+                    "varying vec2 vUv;" +
+
+                    "void main() {" +
+                    "  gl_FragColor = texture2D(texture, clipping.xy + (vUv * clipping.zw));" +
+                    "}";
+    private static float vertexData[] = {
+            0.5f, 0.5f,
+            -0.5f, 0.5f,
+            0.5f, -0.5f,
+            -0.5f, -0.5f
+    };
+    private static float uvData[] = {
+            1f, 1f,
+            0f, 1f,
+            1f, 0f,
+            0f, 0f
+    };
+
+
+    private Map<Integer, Integer> textures;
+    private int program = -1;
+
+    private FloatBuffer vertexBuffer;
+    private FloatBuffer uvBuffer;
+
 
     public GLRendererPlugin() {
+        textures = new HashMap<>();
+    }
+
+    @Override
+    public GLRendererPlugin init() {
+
+        super.init();
+
+        GLES20.glEnable(GLES20.GL_BLEND);
+        GLES20.glBlendFunc(GLES20.GL_ONE, GLES20.GL_ONE_MINUS_SRC_ALPHA);
+        GLES20.glClearColor(0f, 0f, 0f, 1f);
+
+        loadBuffers();
+        loadShaders();
+
+        return this;
+    }
+
+    @Override
+    public GLRendererPlugin clear() {
+        super.clear();
+
+        int[] textureHandle = new int[1];
+        Iterator it = textures.entrySet().iterator();
+
+        while (it.hasNext()) {
+            Map.Entry pair = (Map.Entry) it.next();
+            textureHandle[0] = (Integer) pair.getValue();
+            GLES20.glDeleteTextures(1, textureHandle, 0);
+            it.remove();
+        }
+
+        return this;
+    }
+
+    @Override
+    public GLRendererPlugin before() {
+        Vec4 background = getSceneRenderer()
+                .getScene()
+                .getComponentManager(CameraManager.class)
+                .getActiveCamera()
+                .getBackground();
+
+        GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
+        GLES20.glClearColor(background.x, background.y, background.z, background.w);
+
+        return this;
+    }
+
+    public FloatBuffer getVertexBuffer() {
+        return vertexBuffer;
+    }
+    public FloatBuffer getUVBuffer() {
+        return uvBuffer;
+    }
+    public Map<Integer, Integer> getTextures() {
+        return textures;
+    }
+    public Integer getTexture(final Context context, Integer texture) {
+        if (!textures.containsKey(texture)) {
+            textures.put(texture, new Integer(GLRendererPlugin.loadTexture(context, texture)));
+        }
+        return textures.get(texture);
+    }
+    public int getProgram() {
+        return program;
+    }
+
+    public void set(int width, int height) {
+        Scene scene = sceneRenderer.getScene();
+
+        scene
+            .getComponentManager(CameraManager.class)
+            .getActiveCamera()
+            .set((float) width, (float) height);
+
+        scene
+            .getComponentManager(UIManager.class)
+            .setWidthHeight((float) width, (float) height);
+
+        sceneRenderer
+                .getRenderer(UIGLRenderer.class)
+                .setWidthHeight((float) width, (float) height);
+
+        GLES20.glViewport(0, 0, width, height);
+    }
+
+    private void loadShaders() {
+        program = GLRendererPlugin.createProgram(vertexSource, fragmentSource);
+    }
+
+    private void loadBuffers() {
+        ByteBuffer bb;
+
+        bb = ByteBuffer.allocateDirect(vertexData.length * 4);
+        bb.order(ByteOrder.nativeOrder());
+        vertexBuffer = bb.asFloatBuffer();
+        vertexBuffer.put(vertexData);
+        vertexBuffer.position(0);
+
+        bb = ByteBuffer.allocateDirect(uvData.length * 4);
+        bb.order(ByteOrder.nativeOrder());
+        uvBuffer = bb.asFloatBuffer();
+        uvBuffer.put(uvData);
+        uvBuffer.position(0);
     }
 
     private static int loadShader(int shaderType, String source) {
@@ -110,37 +271,5 @@ public class GLRendererPlugin extends RendererPlugin {
         out[15] = 1;
 
         return out;
-    }
-
-    public void set(int width, int height) {
-        getSceneRenderer()
-                .getScene()
-                .getComponentManager(CameraManager.class)
-                .getActiveCamera()
-                .set((float) width, (float) height);
-
-        GLES20.glViewport(0, 0, width, height);
-    }
-
-    @Override
-    public GLRendererPlugin init() {
-        GLES20.glEnable(GLES20.GL_BLEND);
-        GLES20.glBlendFunc(GLES20.GL_ONE, GLES20.GL_ONE_MINUS_SRC_ALPHA);
-        GLES20.glClearColor(0f, 0f, 0f, 1f);
-        return this;
-    }
-
-    @Override
-    public GLRendererPlugin before() {
-        Vec4 background = getSceneRenderer()
-                .getScene()
-                .getComponentManager(CameraManager.class)
-                .getActiveCamera()
-                .getBackground();
-
-        GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
-        GLES20.glClearColor(background.x, background.y, background.z, background.w);
-
-        return this;
     }
 }

@@ -32,6 +32,7 @@ public class GLRenderer implements GLSurfaceView.Renderer {
 
         sceneRenderer.addRendererPlugin(new GLRendererPlugin());
         sceneRenderer.addRenderer(new SpriteGLRenderer(context));
+        sceneRenderer.addRenderer(new UIGLRenderer(context));
     }
 
     public void onDrawFrame(GL10 unused) {

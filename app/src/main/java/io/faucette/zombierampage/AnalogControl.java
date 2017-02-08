@@ -1,8 +1,6 @@
 package io.faucette.zombierampage;
 
 
-import io.faucette.camera_component.Camera;
-import io.faucette.camera_component.CameraManager;
 import io.faucette.math.Vec2;
 import io.faucette.scene_graph.Component;
 import io.faucette.scene_graph.Entity;
@@ -11,12 +9,9 @@ import io.faucette.transform_components.Transform2D;
 
 
 public class AnalogControl extends Component {
-
-
     private static long leftTouchId = -1;
     private static long rightTouchId = -1;
-    private static float MAX_SIZE = 0.25f;
-    private static float OFFSET = 0.5f;
+    private static float MAX_SIZE = 64f;
     public Vec2 analog;
     private Vec2 tmp;
     private Side side;
@@ -61,29 +56,15 @@ public class AnalogControl extends Component {
             screenWidth = input.getWidth();
             screenHeight = input.getHeight();
 
-            Entity entity = getEntity();
             Transform2D transform = entity.getComponent(Transform2D.class);
-
-            Scene scene = entity.getScene();
-            Camera camera = scene.getComponentManager(CameraManager.class).getActiveCamera();
-
             Vec2 position = transform.getLocalPosition();
 
             if (side == Side.Left) {
-                position.x = 0f;
+                position.x = 128f;
             } else {
-                position.x = input.getWidth();
+                position.x = screenWidth - 128f;
             }
-            position.y = input.getHeight();
-
-            camera.toWorld(position, position);
-
-            if (side == Side.Left) {
-                position.x += OFFSET;
-            } else {
-                position.x -= OFFSET;
-            }
-            position.y += OFFSET;
+            position.y = screenHeight - 128f;
 
             transform.setNeedsUpdate();
         }
@@ -107,11 +88,7 @@ public class AnalogControl extends Component {
             InputPlugin.Touch touch = input.getTouch(getTouchId());
 
             if (touch != null) {
-                Camera camera = scene.getComponentManager(CameraManager.class).getActiveCamera();
-                Vec2 touchPosition = new Vec2();
-                camera.toWorld(touchPosition, touch.position);
-                touchPosition.sub(camera.getEntity().getComponent(Transform2D.class).getPosition());
-
+                Vec2 touchPosition = touch.position;
                 Vec2.sub(tmp, touchPosition, transform.getPosition());
 
                 float length = tmp.length();
@@ -125,12 +102,11 @@ public class AnalogControl extends Component {
             }
         } else {
             boolean noTouch = true;
+
             for (InputPlugin.Touch touch : input.getTouches()) {
+
                 if (!isTouchIdUsed(touch.getId())) {
-                    Camera camera = scene.getComponentManager(CameraManager.class).getActiveCamera();
-                    Vec2 touchPosition = new Vec2();
-                    camera.toWorld(touchPosition, touch.position);
-                    touchPosition.sub(camera.getEntity().getComponent(Transform2D.class).getPosition());
+                    Vec2 touchPosition = touch.position;
 
                     float distance = Utils.circleToPoint(transform.getPosition(), MAX_SIZE, touchPosition);
                     if (distance > 0f) {
@@ -149,6 +125,7 @@ public class AnalogControl extends Component {
 
         childTransform.setPosition(tmp);
         analog.copy(tmp).sdiv(MAX_SIZE);
+        analog.y = -analog.y;
         tmp.smul(0.5f);
 
         return this;

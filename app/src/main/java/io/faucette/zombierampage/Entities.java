@@ -11,6 +11,7 @@ import io.faucette.math.Vec4;
 import io.faucette.scene_graph.Entity;
 import io.faucette.sprite_component.Sprite;
 import io.faucette.transform_components.Transform2D;
+import io.faucette.ui_component.UI;
 
 
 public class Entities {
@@ -19,27 +20,22 @@ public class Entities {
 
     public static int BG_LAYER = 0;
     public static int LAYER = 1;
-    public static int MENU_LAYER = 2;
 
 
     public static Entity createAnalog(AnalogControl.Side side) {
         return new Entity(side == AnalogControl.Side.Left ? "left_analog" : "right_analog")
                 .addComponent(new Transform2D())
                 .addComponent(new AnalogControl(side))
-                .addComponent(new Sprite()
-                        .setLayer(MENU_LAYER)
-                        .setLocal(true)
-                        .setWidth(0.5f)
-                        .setHeight(0.5f)
-                        .setImage(R.drawable.analog))
+                .addComponent(new UI()
+                        .setWidth(128f)
+                        .setHeight(128f)
+                        .setImage(R.drawable.analog_lg))
                 .addChild(new Entity()
                         .addComponent(new Transform2D())
-                        .addComponent(new Sprite()
-                                .setLayer(MENU_LAYER)
-                                .setLocal(true)
-                                .setWidth(0.25f)
-                                .setHeight(0.25f)
-                                .setImage(R.drawable.analog)));
+                        .addComponent(new UI()
+                                .setWidth(64f)
+                                .setHeight(64f)
+                                .setImage(R.drawable.analog_sm)));
     }
 
     public static Entity createPlayer() {
