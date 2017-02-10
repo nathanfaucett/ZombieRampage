@@ -15,7 +15,7 @@ public class PlayerControl extends Component {
     private int gunAmmo = 0;
     private float gunFrequencyTime = 0f;
     private float gunFrequency = 0.5f;
-    private int gunDamage = 10;
+    private int gunDamage = 1;
     private float gunSpeed = 2f;
     private Vec2 gunDir = new Vec2();
     private GunType gunType = GunType.Pistol;
@@ -90,7 +90,7 @@ public class PlayerControl extends Component {
                 gunAmmo = -1;
                 gunFrequency = gunFrequencyTime = 0.5f;
                 gunSpeed = 2f;
-                gunDamage = 20;
+                gunDamage = 1;
                 break;
             }
             case Shotgun: {
@@ -100,7 +100,7 @@ public class PlayerControl extends Component {
                     gunAmmo = shotgunAmmo;
                     gunFrequency = gunFrequencyTime = 1f;
                     gunSpeed = 2f;
-                    gunDamage = 15;
+                    gunDamage = 1;
                 }
                 break;
             }
@@ -111,7 +111,7 @@ public class PlayerControl extends Component {
                     gunAmmo = uziAmmo;
                     gunFrequency = gunFrequencyTime = 0.25f;
                     gunSpeed = 2.5f;
-                    gunDamage = 10;
+                    gunDamage = 1;
                 }
                 break;
             }
@@ -122,7 +122,7 @@ public class PlayerControl extends Component {
                     gunAmmo = flamethrowerAmmo;
                     gunFrequency = gunFrequencyTime = 0.25f;
                     gunSpeed = 1f;
-                    gunDamage = 10;
+                    gunDamage = 1;
                 }
                 break;
             }
@@ -133,7 +133,7 @@ public class PlayerControl extends Component {
                     gunAmmo = bazookaAmmo;
                     gunFrequency = gunFrequencyTime = 2f;
                     gunSpeed = 1.5f;
-                    gunDamage = 100;
+                    gunDamage = 16;
                 }
                 break;
             }
@@ -184,7 +184,7 @@ public class PlayerControl extends Component {
                         entity.getComponent(Transform2D.class).getPosition(),
                         gunDir,
                         gunSpeed,
-                        Utils.attack(gunDamage)
+                        gunDamage
                 )
         );
     }
@@ -193,10 +193,10 @@ public class PlayerControl extends Component {
         Scene scene = entity.getScene();
         Vec2 position = entity.getComponent(Transform2D.class).getPosition();
 
-        scene.addEntity(Entities.createBullet(position, gunDir.transform((float) (Math.PI * -0.0625)), gunSpeed, Utils.attack(gunDamage)));
-        scene.addEntity(Entities.createBullet(position, gunDir.transform((float) (Math.PI * 0.03125)), gunSpeed, Utils.attack(gunDamage)));
-        scene.addEntity(Entities.createBullet(position, gunDir.transform((float) (Math.PI * 0.03125)), gunSpeed, Utils.attack(gunDamage)));
-        scene.addEntity(Entities.createBullet(position, gunDir.transform((float) (Math.PI * 0.03125)), gunSpeed, Utils.attack(gunDamage)));
+        scene.addEntity(Entities.createBullet(position, gunDir.transform((float) (Math.PI * -0.0625)), gunSpeed, gunDamage));
+        scene.addEntity(Entities.createBullet(position, gunDir.transform((float) (Math.PI * 0.03125)), gunSpeed, gunDamage));
+        scene.addEntity(Entities.createBullet(position, gunDir.transform((float) (Math.PI * 0.03125)), gunSpeed, gunDamage));
+        scene.addEntity(Entities.createBullet(position, gunDir.transform((float) (Math.PI * 0.03125)), gunSpeed, gunDamage));
     }
 
     public enum GunType {

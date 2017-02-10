@@ -3,7 +3,6 @@ package io.faucette.zombierampage;
 
 import java.util.Comparator;
 
-import io.faucette.math.Vec2;
 import io.faucette.scene_graph.Entity;
 import io.faucette.scene_graph.Scene;
 import io.faucette.sprite_component.Sprite;
@@ -12,6 +11,7 @@ import io.faucette.transform_components.Transform2D;
 
 
 public class Game {
+    private static int hearts = 4;
     public Scene scene = null;
 
 
@@ -25,9 +25,11 @@ public class Game {
         scene.addPlugin(new InputPlugin());
 
         scene.addEntity(Entities.createCamera());
-        scene.addEntity(Entities.createPlayer());
-        scene.addEntity(Entities.createAnalog(AnalogControl.Side.Left));
-        scene.addEntity(Entities.createAnalog(AnalogControl.Side.Right));
+        scene.addEntity(Entities.createPlayer(hearts * 4));
+
+        scene.addEntity(Entities.createHealthUI(hearts));
+        scene.addEntity(Entities.createAnalogUI(AnalogControl.Side.Left));
+        scene.addEntity(Entities.createAnalogUI(AnalogControl.Side.Right));
 
         scene.getComponentManager(SpriteManager.class).setLayerComparators(Entities.LAYER, new Comparator<Sprite>() {
             @Override

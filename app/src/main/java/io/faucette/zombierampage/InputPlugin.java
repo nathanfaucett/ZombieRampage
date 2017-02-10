@@ -102,42 +102,36 @@ public class InputPlugin extends Plugin {
         touches.clear();
     }
 
-    public boolean onTouchEvent(GameView gameView, MotionEvent e) {
+    public boolean onTouchEvent(MotionEvent e) {
         synchronized (touches) {
             int pointerIndex = e.getActionIndex();
-            int pointerId = e.getPointerId(pointerIndex);
             int pointerCount = e.getPointerCount();
+            int actionMasked = e.getActionMasked();
 
-            for (int i = pointerCount - 1; i >= 0; i--) {
-                switch (e.getActionMasked()) {
-                    case MotionEvent.ACTION_DOWN: {
-                        if (pointerId == 0) {
-                            Touch touch = new Touch(0);
-                            touchDown(touch, e.getX(0), e.getY(0));
-                            touches.add(touch);
-                        }
-                        break;
-                    }
+            if (pointerCount > 0) {
+                for (int i = 0; i < pointerCount; i++) {
+                    touchMove(i, e.getX(i), e.getY(i));
+                }
+
+                switch (actionMasked) {
                     case MotionEvent.ACTION_POINTER_DOWN: {
-                        if (pointerId == i) {
-                            Touch touch = new Touch(i);
-                            touchDown(touch, e.getX(i), e.getY(i));
-                            touches.add(touch);
-                        }
-                        break;
-                    }
-                    case MotionEvent.ACTION_MOVE: {
-                        touchMove(i, e.getX(i), e.getY(i));
-                        break;
-                    }
-                    case MotionEvent.ACTION_UP: {
-                        touchEnd(0);
+                        Touch touch = new Touch(pointerIndex);
+                        touchDown(touch, e.getX(pointerIndex), e.getY(pointerIndex));
+                        touches.add(touch);
                         break;
                     }
                     case MotionEvent.ACTION_POINTER_UP: {
-                        if (i != 0) {
-                            touchEnd(i);
-                        }
+                        touchEnd(pointerIndex);
+                        break;
+                    }
+                    case MotionEvent.ACTION_DOWN: {
+                        Touch touch = new Touch(pointerIndex);
+                        touchDown(touch, e.getX(pointerIndex), e.getY(pointerIndex));
+                        touches.add(touch);
+                        break;
+                    }
+                    case MotionEvent.ACTION_UP: {
+                        touchEnd(pointerIndex);
                         break;
                     }
                     case MotionEvent.ACTION_CANCEL: {
@@ -145,6 +139,8 @@ public class InputPlugin extends Plugin {
                         break;
                     }
                 }
+            } else {
+                touchCancel();
             }
         }
         return true;

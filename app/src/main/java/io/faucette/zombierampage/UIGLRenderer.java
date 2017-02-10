@@ -4,23 +4,15 @@ package io.faucette.zombierampage;
 import android.content.Context;
 import android.opengl.GLES20;
 
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.FloatBuffer;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
 
-import io.faucette.camera_component.Camera;
-import io.faucette.camera_component.CameraManager;
 import io.faucette.math.Mat32;
 import io.faucette.scene_graph.Scene;
 import io.faucette.scene_renderer.Renderer;
-import io.faucette.scene_renderer.RendererPlugin;
 import io.faucette.scene_renderer.SceneRenderer;
+import io.faucette.transform_components.Transform2D;
 import io.faucette.ui_component.UI;
 import io.faucette.ui_component.UIManager;
-import io.faucette.transform_components.Transform2D;
 
 
 public class UIGLRenderer extends Renderer {
@@ -115,7 +107,7 @@ public class UIGLRenderer extends Renderer {
         clippingData[0] = ui.getX();
         clippingData[1] = ui.getY();
         clippingData[2] = ui.getW();
-        clippingData[3] = ui.getH();
+        clippingData[3] = -ui.getH();
 
         transform2D.getModelView(modelView, identity);
         GLRendererPlugin.mat32ToFloat16(modelViewData, modelView);

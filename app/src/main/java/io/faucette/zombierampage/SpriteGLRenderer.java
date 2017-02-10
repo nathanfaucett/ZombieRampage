@@ -4,12 +4,7 @@ package io.faucette.zombierampage;
 import android.content.Context;
 import android.opengl.GLES20;
 
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.FloatBuffer;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
 
 import io.faucette.camera_component.Camera;
 import io.faucette.camera_component.CameraManager;

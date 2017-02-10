@@ -22,6 +22,6 @@ public class GameView extends GLSurfaceView {
 
     @Override
     public boolean onTouchEvent(MotionEvent e) {
-        return renderer.game.scene.getPlugin(InputPlugin.class).onTouchEvent(this, e);
+        return renderer.game.scene.getPlugin(InputPlugin.class).onTouchEvent(e);
     }
 }

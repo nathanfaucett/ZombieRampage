@@ -70,7 +70,7 @@ public class StatusControl extends Component {
     }
 
     public void getHealth() {
-        int amount = Utils.health(maxHp);
+        int amount = 4;
 
         if (hp + amount > maxHp) {
             hp = maxHp;
@@ -89,12 +89,19 @@ public class StatusControl extends Component {
             } else {
                 state = State.Hit;
             }
+
+            if (entity.getName() == "player") {
+                entity.getScene()
+                        .getEntity("health_ui")
+                        .getComponent(HealthControl.class)
+                        .updateHearts(hp);
+            }
         }
     }
 
     public void attack(StatusControl other) {
         if (state == State.Alive) {
-            other.takeDamage(Utils.attack(pp));
+            other.takeDamage(pp);
         }
     }
 
@@ -133,17 +140,17 @@ public class StatusControl extends Component {
 
                     if (dropItem && (Math.random() < dropChance)) {
                         Vec2 position = entity.getComponent(Transform2D.class).getPosition();
-                        float chance = 1f - (float) Math.random();
+                        float chance = (float) Math.random();
 
-                        if (chance < 0.75) {
+                        if (chance < 0.3f) {
                             scene.addEntity(Entities.createAmmo(PlayerControl.GunType.Shotgun, position));
-                        } else if (chance < 0.6) {
+                        } else if (chance < 0.6f) {
                             scene.addEntity(Entities.createAmmo(PlayerControl.GunType.Uzi, position));
-                        } else if (chance < 0.45) {
+                        } else if (chance < 0.8f) {
                             scene.addEntity(Entities.createHealth(position));
-                        } else if (chance < 0.3) {
+                        } else if (chance < 0.9f) {
                             scene.addEntity(Entities.createAmmo(PlayerControl.GunType.FlameThrower, position));
-                        } else if (chance < 0.15) {
+                        } else if (chance < 1.0f) {
                             scene.addEntity(Entities.createAmmo(PlayerControl.GunType.Bazooka, position));
                         }
                     }

@@ -22,7 +22,7 @@ public class Entities {
     public static int LAYER = 1;
 
 
-    public static Entity createAnalog(AnalogControl.Side side) {
+    public static Entity createAnalogUI(AnalogControl.Side side) {
         return new Entity(side == AnalogControl.Side.Left ? "left_analog" : "right_analog")
                 .addComponent(new Transform2D())
                 .addComponent(new AnalogControl(side))
@@ -38,11 +38,32 @@ public class Entities {
                                 .setImage(R.drawable.analog_sm)));
     }
 
-    public static Entity createPlayer() {
+    public static Entity createHealthUI(int hearts) {
+        Entity entity = new Entity("health_ui")
+                .addComponent(new Transform2D())
+                .addComponent(new HealthControl(hearts));
+
+        for (int i = 0; i < hearts; i++) {
+            entity.addChild(createHealthHeartUI());
+        }
+
+        return entity;
+    }
+
+    public static Entity createHealthHeartUI() {
+        return new Entity()
+                .addComponent(new Transform2D())
+                .addComponent(new UI()
+                        .setWidth(32f)
+                        .setHeight(32f)
+                        .setImage(R.drawable.heart_4_4));
+    }
+
+    public static Entity createPlayer(int health) {
         return new Entity("player")
                 .setTag("player")
                 .addComponent(new Transform2D())
-                .addComponent(new StatusControl(100, 0, 0.2f, 0f)
+                .addComponent(new StatusControl(health, 0, 0.2f, 0f)
                         .setAllowHitWhileHit(false)
                         .setDropItem(false))
                 .addComponent(new PlayerControl())
@@ -147,29 +168,42 @@ public class Entities {
 
     private static float getAmmoWidth(PlayerControl.GunType type) {
         switch (type) {
-            case Shotgun: return 0.125f;
-            case Uzi: return 0.15625f;
-            case FlameThrower: return 0.140625f;
-            case Bazooka: return 0.3125f;
+            case Shotgun:
+                return 0.125f;
+            case Uzi:
+                return 0.15625f;
+            case FlameThrower:
+                return 0.140625f;
+            case Bazooka:
+                return 0.3125f;
         }
         return -1;
     }
+
     private static float getAmmoHeight(PlayerControl.GunType type) {
         switch (type) {
-            case Shotgun: return 0.25f;
-            case Uzi: return 0.171875f;
-            case FlameThrower: return 0.203125f;
-            case Bazooka: return 0.09375f;
+            case Shotgun:
+                return 0.25f;
+            case Uzi:
+                return 0.171875f;
+            case FlameThrower:
+                return 0.203125f;
+            case Bazooka:
+                return 0.09375f;
         }
         return -1;
     }
 
     private static Integer getAmmoImage(PlayerControl.GunType type) {
         switch (type) {
-            case Shotgun: return R.drawable.shotgun_ammo;
-            case Uzi: return R.drawable.uzi_ammo;
-            case FlameThrower: return R.drawable.flamethrower_ammo;
-            case Bazooka: return R.drawable.bazooka_ammo;
+            case Shotgun:
+                return R.drawable.shotgun_ammo;
+            case Uzi:
+                return R.drawable.uzi_ammo;
+            case FlameThrower:
+                return R.drawable.flamethrower_ammo;
+            case Bazooka:
+                return R.drawable.bazooka_ammo;
         }
         return -1;
     }
@@ -179,7 +213,7 @@ public class Entities {
                 .setTag("enemy")
                 .addComponent(new Transform2D()
                         .setPosition(new Vec2(x, y)))
-                .addComponent(new StatusControl(100, 10, 0.1f))
+                .addComponent(new StatusControl(4, 1, 0.1f))
                 .addComponent(new EnemyControl())
                 .addComponent(new AnimationControl())
                 .addComponent(new RigidBody(RigidBody.Type.Dynamic)
