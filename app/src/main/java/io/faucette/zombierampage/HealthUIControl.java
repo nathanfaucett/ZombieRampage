@@ -9,19 +9,19 @@ import io.faucette.ui_component.UI;
 /**
  * Created by nathan on 2/10/17.
  */
-public class HealthControl extends Component {
+public class HealthUIControl extends Component {
     private int hearts;
     private float screenWidth;
     private float screenHeight;
 
 
-    public HealthControl(int hearts) {
+    public HealthUIControl(int hearts) {
         super();
 
         this.hearts = hearts;
     }
 
-    public HealthControl updateHearts(int health) {
+    public HealthUIControl updateHearts(int health) {
         for (Entity child : entity.getChildren()) {
             UI ui = child.getComponent(UI.class);
             int count = 4;
@@ -63,7 +63,7 @@ public class HealthControl extends Component {
         }
     }
 
-    private HealthControl updatePosition(InputPlugin input) {
+    private HealthUIControl updatePosition(InputPlugin input) {
         float heartSize = 48f;
         float width = hearts * heartSize;
         float height = heartSize;
@@ -83,7 +83,7 @@ public class HealthControl extends Component {
     }
 
     @Override
-    public HealthControl update() {
+    public HealthUIControl update() {
         InputPlugin input = entity.getScene().getPlugin(InputPlugin.class);
 
         if (screenWidth != input.getWidth() || screenHeight != input.getHeight()) {

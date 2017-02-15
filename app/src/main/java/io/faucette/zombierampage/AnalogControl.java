@@ -148,8 +148,12 @@ public class AnalogControl extends Component {
         } else {
             for (InputPlugin.Touch touch : input.getTouches()) {
                 if (isOwnSide(touch) && canUseTouch(touch.getId())) {
-                    setTouchIdUsed(touch.getId());
-                    dragging = true;
+                    float distance = Utils.circleToPoint(transform.getPosition(), MAX_SIZE, touch.position);
+
+                    if (distance > 0f) {
+                        setTouchIdUsed(touch.getId());
+                        dragging = true;
+                    }
                 }
             }
         }

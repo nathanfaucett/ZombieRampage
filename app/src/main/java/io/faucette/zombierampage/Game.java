@@ -24,12 +24,13 @@ public class Game {
 
         scene.addPlugin(new InputPlugin());
 
-        scene.addEntity(Entities.createCamera());
-        scene.addEntity(Entities.createPlayer(hearts * 4));
-
         scene.addEntity(Entities.createHealthUI(hearts));
+        scene.addEntity(Entities.createGunUI());
         scene.addEntity(Entities.createAnalogUI(AnalogControl.Side.Left));
         scene.addEntity(Entities.createAnalogUI(AnalogControl.Side.Right));
+
+        scene.addEntity(Entities.createCamera());
+        scene.addEntity(Entities.createPlayer(hearts * 4));
 
         scene.getComponentManager(SpriteManager.class).setLayerComparators(Entities.LAYER, new Comparator<Sprite>() {
             @Override

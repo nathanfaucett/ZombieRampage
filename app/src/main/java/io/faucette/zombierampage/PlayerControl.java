@@ -11,7 +11,6 @@ public class PlayerControl extends Component {
     private int shotgunAmmo = 0;
     private int uziAmmo = 0;
     private int flamethrowerAmmo = 0;
-    private int bazookaAmmo = 0;
     private int gunAmmo = 0;
     private float gunFrequencyTime = 0f;
     private float gunFrequency = 0.5f;
@@ -24,7 +23,7 @@ public class PlayerControl extends Component {
     public PlayerControl() {
         super();
 
-        setGun(GunType.Pistol);
+        setGunType(GunType.Pistol);
     }
 
     @Override
@@ -67,91 +66,118 @@ public class PlayerControl extends Component {
         switch (gunType) {
             case Shotgun: {
                 shotgunAmmo += 5 + (int) (Math.random() * 10);
+
+                if (this.gunType.ordinal() < GunType.Shotgun.ordinal()) {
+                    updateGunType(GunType.Shotgun);
+                }
                 break;
             }
             case Uzi: {
-                shotgunAmmo += 25 + (int) (Math.random() * 25);
+                uziAmmo += 10 + (int) (Math.random() * 20);
+
+                if (this.gunType.ordinal() < GunType.Uzi.ordinal()) {
+                    updateGunType(GunType.Uzi);
+                }
                 break;
             }
             case FlameThrower: {
-                shotgunAmmo += 25 + (int) (Math.random() * 100);
-                break;
-            }
-            case Bazooka: {
-                shotgunAmmo += 1 + (int) (Math.random() * 2);
+                flamethrowerAmmo += 20 + (int) (Math.random() * 40);
+
+                if (this.gunType.ordinal() < GunType.FlameThrower.ordinal()) {
+                    updateGunType(GunType.FlameThrower);
+                }
                 break;
             }
         }
     }
 
-    private void setGun(GunType gunType) {
+    public GunType getGunType() {
+        return gunType;
+    }
+
+    public GunType setGunType(GunType gunType) {
         switch (gunType) {
             case Pistol: {
                 gunAmmo = -1;
-                gunFrequency = gunFrequencyTime = 0.5f;
+                gunFrequency = 0.5f;
+                gunFrequencyTime = 0f;
                 gunSpeed = 2f;
                 gunDamage = 1;
                 break;
             }
             case Shotgun: {
                 if (shotgunAmmo == 0) {
-                    setGun(GunType.Pistol);
+                    return setGunType(GunType.Pistol);
                 } else {
                     gunAmmo = shotgunAmmo;
-                    gunFrequency = gunFrequencyTime = 1f;
-                    gunSpeed = 2f;
+                    gunFrequency = 1f;
+                    gunFrequencyTime = 0f;
+                    gunSpeed = 1.5f;
                     gunDamage = 1;
                 }
                 break;
             }
             case Uzi: {
                 if (uziAmmo == 0) {
-                    setGun(GunType.Shotgun);
+                    return setGunType(GunType.Shotgun);
                 } else {
                     gunAmmo = uziAmmo;
-                    gunFrequency = gunFrequencyTime = 0.25f;
-                    gunSpeed = 2.5f;
+                    gunFrequency = 0.1f;
+                    gunFrequencyTime = 0f;
+                    gunSpeed = 3f;
                     gunDamage = 1;
                 }
                 break;
             }
             case FlameThrower: {
                 if (flamethrowerAmmo == 0) {
-                    setGun(GunType.Uzi);
+                    return setGunType(GunType.Uzi);
                 } else {
                     gunAmmo = flamethrowerAmmo;
-                    gunFrequency = gunFrequencyTime = 0.25f;
+                    gunFrequency = 0.1f;
+                    gunFrequencyTime = 0f;
                     gunSpeed = 1f;
                     gunDamage = 1;
                 }
                 break;
             }
-            case Bazooka: {
-                if (bazookaAmmo == 0) {
-                    setGun(GunType.FlameThrower);
-                } else {
-                    gunAmmo = bazookaAmmo;
-                    gunFrequency = gunFrequencyTime = 2f;
-                    gunSpeed = 1.5f;
-                    gunDamage = 16;
-                }
-                break;
+            default: {
+                return setGunType(GunType.Pistol);
             }
+
         }
+
         this.gunType = gunType;
+
+        return this.gunType;
+    }
+    public void updateGunType(GunType gunType) {
+        setGunType(gunType);
+        entity.getScene().getEntity("gun_ui")
+                .getComponent(GunUIControl.class).updateGun();
     }
 
     private void fire() {
         Scene scene = entity.getScene();
 
         if (gunAmmo == 0) {
-            setGun(GunType.values()[gunType.ordinal() - 1]);
+            int ordinal = gunType.ordinal() - 1;
+
+            if (ordinal < 0) {
+                updateGunType(GunType.Pistol);
+            } else {
+                updateGunType(GunType.values()[ordinal]);
+            }
         }
 
         gunFrequencyTime += scene.getTime().getFixedDelta();
 
         if (gunFrequencyTime >= gunFrequency) {
             gunFrequencyTime = 0f;
+
+            if (gunAmmo != -1) {
+                gunAmmo -= 1;
+            }
 
             switch (gunType) {
                 case Pistol: {
@@ -167,11 +193,7 @@ public class PlayerControl extends Component {
                     break;
                 }
                 case FlameThrower: {
-                    fireBullet();
-                    break;
-                }
-                case Bazooka: {
-                    fireBullet();
+                    fireFlamethrowerBullet();
                     break;
                 }
             }
@@ -199,11 +221,21 @@ public class PlayerControl extends Component {
         scene.addEntity(Entities.createBullet(position, gunDir.transform((float) (Math.PI * 0.03125)), gunSpeed, gunDamage));
     }
 
+    private void fireFlamethrowerBullet() {
+        entity.getScene().addEntity(
+                Entities.createFlamethrowerBullet(
+                        entity.getComponent(Transform2D.class).getPosition(),
+                        gunDir,
+                        gunSpeed,
+                        gunDamage
+                )
+        );
+    }
+
     public enum GunType {
         Pistol,
         Shotgun,
         Uzi,
         FlameThrower,
-        Bazooka,
     }
 }

@@ -21,7 +21,7 @@ public class StatusControl extends Component {
     private State state;
     private boolean allowHitWhileHit = true;
     private boolean dropItem = true;
-    private float dropChance = 0.5f;
+    private float dropChance = 0.75f;
     private float birthTimeCurrent = 0f;
     private float hitTimeCurrent = 0f;
     private float dyingTimeCurrent = 0f;
@@ -77,6 +77,13 @@ public class StatusControl extends Component {
         } else {
             hp += amount;
         }
+
+        if (entity.getName() == "player") {
+            entity.getScene()
+                    .getEntity("health_ui")
+                    .getComponent(HealthUIControl.class)
+                    .updateHearts(hp);
+        }
     }
 
     public void takeDamage(int amount) {
@@ -93,7 +100,7 @@ public class StatusControl extends Component {
             if (entity.getName() == "player") {
                 entity.getScene()
                         .getEntity("health_ui")
-                        .getComponent(HealthControl.class)
+                        .getComponent(HealthUIControl.class)
                         .updateHearts(hp);
             }
         }
@@ -142,16 +149,14 @@ public class StatusControl extends Component {
                         Vec2 position = entity.getComponent(Transform2D.class).getPosition();
                         float chance = (float) Math.random();
 
-                        if (chance < 0.3f) {
+                        if (chance < 0.4f) {
                             scene.addEntity(Entities.createAmmo(PlayerControl.GunType.Shotgun, position));
                         } else if (chance < 0.6f) {
                             scene.addEntity(Entities.createAmmo(PlayerControl.GunType.Uzi, position));
                         } else if (chance < 0.8f) {
                             scene.addEntity(Entities.createHealth(position));
-                        } else if (chance < 0.9f) {
-                            scene.addEntity(Entities.createAmmo(PlayerControl.GunType.FlameThrower, position));
                         } else if (chance < 1.0f) {
-                            scene.addEntity(Entities.createAmmo(PlayerControl.GunType.Bazooka, position));
+                            scene.addEntity(Entities.createAmmo(PlayerControl.GunType.FlameThrower, position));
                         }
                     }
                 }
