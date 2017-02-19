@@ -7,31 +7,57 @@ import io.faucette.scene_graph.Component;
 import io.faucette.scene_graph.Scene;
 
 
-public class EnemySpawn extends Component {
+public class LevelControl extends Component {
+    private int origTotal = 16;
     private int total = 16;
     private float currentTime = 0f;
     private float rate = 4f;
+    private boolean playing;
 
 
-    public EnemySpawn() {
+    public LevelControl() {
         super();
+        playing = true;
     }
 
-    public EnemySpawn setTotal(int total) {
-        this.total = total;
-        currentTime = 0f;
-        return this;
+    public boolean isPaused() {
+        return playing == false;
+    }
+    public boolean isPlaying() {
+        return playing;
+    }
+    public void pause() {
+        playing = false;
+    }
+    public void resume() {
+        playing = true;
     }
 
-    public EnemySpawn update() {
+    public LevelControl update() {
+        if (isPaused()) {
+            return this;
+        }
+
         currentTime += entity.getScene().getTime().getDelta();
 
         if (total != 0 && currentTime > rate) {
-            setTotal(total - 1);
+            total -= 1;
+            currentTime = 0f;
             spawn();
         }
 
+        if (total == 0) {
+            reset();
+        }
+
         return this;
+    }
+
+    private void reset() {
+        total = origTotal + (int) (origTotal * 0.5f);
+        origTotal = total;
+        rate *= 0.9f;
+        currentTime = 0f;
     }
 
     private void spawn() {

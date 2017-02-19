@@ -24,10 +24,11 @@ public class Game {
 
         scene.addPlugin(new InputPlugin());
 
-        scene.addEntity(Entities.createHealthUI(hearts));
-        scene.addEntity(Entities.createGunUI());
-        scene.addEntity(Entities.createAnalogUI(AnalogControl.Side.Left));
-        scene.addEntity(Entities.createAnalogUI(AnalogControl.Side.Right));
+        scene.addEntity(UIEntities.createHealth(hearts));
+        scene.addEntity(UIEntities.createGun());
+        scene.addEntity(UIEntities.createAnalog(AnalogControl.Side.Left));
+        scene.addEntity(UIEntities.createAnalog(AnalogControl.Side.Right));
+        scene.addEntity(UIEntities.createPauseBtn());
 
         scene.addEntity(Entities.createCamera());
         scene.addEntity(Entities.createPlayer(hearts * 4));
@@ -47,7 +48,7 @@ public class Game {
             scene.addEntity(Entities.createTile(section, size));
         }
 
-        scene.addEntity(new Entity().addComponent(new EnemySpawn()));
+        scene.addEntity(new Entity("level_control").addComponent(new LevelControl()));
 
         return scene;
     }

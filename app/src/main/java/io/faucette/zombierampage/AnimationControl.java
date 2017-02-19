@@ -5,7 +5,7 @@ import io.faucette.math.Vec2;
 import io.faucette.scene_graph.Component;
 
 
-public class AnimationControl extends Component {
+public class AnimationControl extends Pauseable {
     private static float MIN_SPEED = 0.1f;
     public Vec2 direction = new Vec2();
     public boolean fromVelocity = true;
@@ -18,6 +18,10 @@ public class AnimationControl extends Component {
 
     @Override
     public AnimationControl update() {
+        if (this.isPaused()) {
+            return this;
+        }
+
         SpriteAnimation spriteAnimation = entity.getComponent(SpriteAnimation.class);
         StatusControl.State state = entity.getComponent(StatusControl.class).getState();
 

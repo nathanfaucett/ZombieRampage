@@ -8,7 +8,7 @@ import io.faucette.scene_graph.Scene;
 import io.faucette.transform_components.Transform2D;
 
 
-public class AnalogControl extends Component {
+public class AnalogControl extends Pauseable {
     private static long leftTouchId = -1;
     private static long rightTouchId = -1;
 
@@ -115,6 +115,10 @@ public class AnalogControl extends Component {
 
     @Override
     public AnalogControl update() {
+        if (this.isPaused()) {
+            return this;
+        }
+
         Entity entity = getEntity();
         Scene scene = entity.getScene();
         InputPlugin input = scene.getPlugin(InputPlugin.class);

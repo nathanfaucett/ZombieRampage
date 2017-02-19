@@ -23,53 +23,6 @@ public class Entities {
     public static int LAYER = 1;
 
 
-    public static Entity createAnalogUI(AnalogControl.Side side) {
-        return new Entity(side == AnalogControl.Side.Left ? "left_analog" : "right_analog")
-                .addComponent(new Transform2D())
-                .addComponent(new AnalogControl(side))
-                .addComponent(new UI()
-                        .setWidth(128f)
-                        .setHeight(128f)
-                        .setImage(R.drawable.analog_lg))
-                .addChild(new Entity()
-                        .addComponent(new Transform2D())
-                        .addComponent(new UI()
-                                .setWidth(64f)
-                                .setHeight(64f)
-                                .setImage(R.drawable.analog_sm)));
-    }
-
-    public static Entity createHealthUI(int hearts) {
-        Entity entity = new Entity("health_ui")
-                .addComponent(new Transform2D())
-                .addComponent(new HealthUIControl(hearts));
-
-        for (int i = 0; i < hearts; i++) {
-            entity.addChild(createHealthHeartUI());
-        }
-
-        return entity;
-    }
-
-    public static Entity createHealthHeartUI() {
-        return new Entity()
-                .addComponent(new Transform2D())
-                .addComponent(new UI()
-                        .setWidth(32f)
-                        .setHeight(32f)
-                        .setImage(R.drawable.heart_4_4));
-    }
-
-    public static Entity createGunUI() {
-        return new Entity("gun_ui")
-                .addComponent(new GunUIControl())
-                .addComponent(new Transform2D())
-                .addComponent(new UI()
-                        .setWidth(96f)
-                        .setHeight(96f)
-                        .setImage(R.drawable.pistol));
-    }
-
     public static Entity createPlayer(int health) {
         return new Entity("player")
                 .setTag("player")
@@ -121,6 +74,7 @@ public class Entities {
                         .setHeight(0.234375f)
                         .setImage(R.drawable.bullet));
     }
+
     public static Entity createFlamethrowerBullet(Vec2 position, Vec2 direction, float speed, final int pp) {
         return new Entity()
                 .setTag("bullet")
@@ -447,7 +401,7 @@ public class Entities {
     }
 
     private static void putFireAnimations(HashMap<String, float[][]> animations, float size) {
-        fireAnimations.put("burn", new float[][] {
+        fireAnimations.put("burn", new float[][]{
                 {size * 0, 0f, size, 1f, size},
                 {size * 1, 0f, size, 1f, size},
                 {size * 2, 0f, size, 1f, size},

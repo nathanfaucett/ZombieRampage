@@ -8,7 +8,7 @@ import io.faucette.math.Vec2;
 import io.faucette.scene_graph.ComponentManager;
 
 
-public class RigidBodyManager extends ComponentManager {
+public class RigidBodyManager extends PauseableManager {
     private List<Contact> contacts;
 
 

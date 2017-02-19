@@ -7,7 +7,7 @@ import io.faucette.transform_components.Transform2D;
 import io.faucette.ui_component.UI;
 
 
-public class GunUIControl extends Component {
+public class GunUIControl extends Pauseable {
     private float screenWidth;
     private float screenHeight;
 
@@ -38,7 +38,7 @@ public class GunUIControl extends Component {
         int ordinal = playerControl.getGunType().ordinal() + 1;
         if (ordinal >= PlayerControl.GunType.values().length) {
             playerControl.setGunType(PlayerControl.GunType.Pistol);
-        } else{
+        } else {
             playerControl.setGunType(PlayerControl.GunType.values()[ordinal]);
         }
 
@@ -93,6 +93,10 @@ public class GunUIControl extends Component {
             screenWidth = input.getWidth();
             screenHeight = input.getHeight();
             updatePosition(input);
+        }
+
+        if (this.isPaused()) {
+            return this;
         }
 
         hover = false;

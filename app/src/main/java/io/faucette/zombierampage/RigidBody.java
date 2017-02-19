@@ -13,7 +13,7 @@ import io.faucette.scene_graph.Scene;
 import io.faucette.transform_components.Transform2D;
 
 
-public class RigidBody extends Component {
+public class RigidBody extends Pauseable {
     protected float damping;
     protected Vec2 velocity;
     private Type type;
@@ -98,6 +98,10 @@ public class RigidBody extends Component {
 
     @Override
     public RigidBody update() {
+        if (this.isPaused()) {
+            return this;
+        }
+
         Transform2D transform2D = entity.getComponent(Transform2D.class);
         Vec2 position = transform2D.getLocalPosition();
 

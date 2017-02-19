@@ -7,7 +7,7 @@ import io.faucette.scene_graph.Component;
 import io.faucette.sprite_component.Sprite;
 
 
-public class SpriteAnimation extends Component {
+public class SpriteAnimation extends Pauseable {
     private HashMap<String, float[][]> animations;
     private String animation;
     private int currentFrame;
@@ -27,6 +27,10 @@ public class SpriteAnimation extends Component {
 
     @Override
     public SpriteAnimation update() {
+        if (this.isPaused()) {
+            return this;
+        }
+
         float[][] frames = animations.get(animation);
 
         if (frames != null && currentFrame < frames.length) {

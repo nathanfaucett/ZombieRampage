@@ -9,7 +9,7 @@ import io.faucette.transform_components.Transform2D;
  * Created by nathan on 1/28/17.
  */
 
-public class StatusControl extends Component {
+public class StatusControl extends Pauseable {
     private int hp;
     private int maxHp;
     private int pp;
@@ -114,6 +114,10 @@ public class StatusControl extends Component {
 
     @Override
     public StatusControl update() {
+        if (this.isPaused()) {
+            return this;
+        }
+
         float dt = (float) entity.getScene().getTime().getDelta();
 
         switch (state) {

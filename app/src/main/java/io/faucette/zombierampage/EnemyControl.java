@@ -8,7 +8,7 @@ import io.faucette.scene_graph.Scene;
 import io.faucette.transform_components.Transform2D;
 
 
-public class EnemyControl extends Component {
+public class EnemyControl extends Pauseable {
     private static float MIN_PLAYER_DISTANCE = 1.5f;
     private static float MIN_TILE_DISTANCE = 0.5f;
 
@@ -25,6 +25,10 @@ public class EnemyControl extends Component {
 
     @Override
     public EnemyControl update() {
+        if (this.isPaused()) {
+            return this;
+        }
+
         StatusControl statusControl = entity.getComponent(StatusControl.class);
         StatusControl.State state = statusControl.getState();
 

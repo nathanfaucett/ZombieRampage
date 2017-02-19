@@ -6,7 +6,7 @@ import io.faucette.scene_graph.Scene;
 import io.faucette.transform_components.Transform2D;
 
 
-public class PlayerControl extends Component {
+public class PlayerControl extends Pauseable {
     private static float MIN_FIRE_INPUT = 0.01f;
     private int shotgunAmmo = 0;
     private int uziAmmo = 0;
@@ -28,6 +28,10 @@ public class PlayerControl extends Component {
 
     @Override
     public PlayerControl update() {
+        if (this.isPaused()) {
+            return this;
+        }
+
         StatusControl.State state = entity.getComponent(StatusControl.class).getState();
 
         if (state != StatusControl.State.Dying && state != StatusControl.State.Dead) {
@@ -151,6 +155,7 @@ public class PlayerControl extends Component {
 
         return this.gunType;
     }
+
     public void updateGunType(GunType gunType) {
         setGunType(gunType);
         entity.getScene().getEntity("gun_ui")

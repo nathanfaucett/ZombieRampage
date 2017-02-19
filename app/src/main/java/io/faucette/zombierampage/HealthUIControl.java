@@ -9,7 +9,7 @@ import io.faucette.ui_component.UI;
 /**
  * Created by nathan on 2/10/17.
  */
-public class HealthUIControl extends Component {
+public class HealthUIControl extends Pauseable {
     private int hearts;
     private float screenWidth;
     private float screenHeight;
