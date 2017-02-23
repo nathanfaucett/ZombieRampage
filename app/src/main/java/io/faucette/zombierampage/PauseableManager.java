@@ -5,16 +5,19 @@ import io.faucette.scene_graph.ComponentManager;
 
 
 public class PauseableManager extends ComponentManager {
+    public LevelControl getLevelControl() {
+        return scene.getEntity("level_control").getComponent(LevelControl.class);
+    }
     public boolean isPaused() {
-        return scene.getEntity("level_control").getComponent(LevelControl.class).isPaused();
+        return getLevelControl().isPaused();
     }
     public boolean isPlaying() {
-        return scene.getEntity("level_control").getComponent(LevelControl.class).isPlaying();
+        return getLevelControl().isPlaying();
     }
     public void pause() {
-        scene.getEntity("level_control").getComponent(LevelControl.class).pause();
+        getLevelControl().pause();
     }
     public void resume() {
-        scene.getEntity("level_control").getComponent(LevelControl.class).resume();
+        getLevelControl().resume();
     }
 }

@@ -8,16 +8,25 @@ import io.faucette.scene_graph.Scene;
 
 
 public class LevelControl extends Component {
-    private int origTotal = 16;
-    private int total = 16;
+    private GLRenderer renderer;
+
+    private int enemiesOrigTotal = 16;
+    private int enemiesTotal = 16;
+    private int enemiesLeft = 16;
+
     private float currentTime = 0f;
     private float rate = 4f;
     private boolean playing;
 
 
-    public LevelControl() {
+    public LevelControl(GLRenderer renderer) {
         super();
+        this.renderer = renderer;
         playing = true;
+    }
+
+    public void loadMenu() {
+        renderer.game.loadMenu();
     }
 
     public boolean isPaused() {
@@ -40,22 +49,27 @@ public class LevelControl extends Component {
 
         currentTime += entity.getScene().getTime().getDelta();
 
-        if (total != 0 && currentTime > rate) {
-            total -= 1;
+        if (enemiesTotal != 0 && currentTime > rate) {
+            enemiesTotal -= 1;
             currentTime = 0f;
             spawn();
         }
 
-        if (total == 0) {
+        if (enemiesTotal == 0 && enemiesLeft == 0) {
             reset();
         }
 
         return this;
     }
 
+    public void enemyKilled() {
+        enemiesLeft -= 1;
+    }
+    
     private void reset() {
-        total = origTotal + (int) (origTotal * 0.5f);
-        origTotal = total;
+        enemiesTotal = enemiesOrigTotal + (int) (enemiesOrigTotal * 0.5f);
+        enemiesOrigTotal = enemiesTotal;
+        enemiesLeft = enemiesTotal;
         rate *= 0.9f;
         currentTime = 0f;
     }

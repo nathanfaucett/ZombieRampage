@@ -39,50 +39,52 @@ public class SpriteGLRenderer extends Renderer {
         Scene scene = sceneRenderer.getScene();
 
         SpriteManager spriteManager = scene.getComponentManager(SpriteManager.class);
-        Camera camera = scene.getComponentManager(CameraManager.class).getActiveCamera();
-        Mat32 projection = camera.getProjection();
-        Mat32 view = camera.getView();
 
-        Iterator<Sprite> it = spriteManager.iterator();
+        if (spriteManager != null) {
+            Camera camera = scene.getComponentManager(CameraManager.class).getActiveCamera();
+            Mat32 projection = camera.getProjection();
+            Mat32 view = camera.getView();
 
-        int program = glPlugin.getProgram();
-        GLES20.glUseProgram(program);
+            Iterator<Sprite> it = spriteManager.iterator();
 
-        int positionHandle = GLES20.glGetAttribLocation(program, "position");
-        GLES20.glEnableVertexAttribArray(positionHandle);
-        GLES20.glVertexAttribPointer(positionHandle, 2, GLES20.GL_FLOAT, false, 2 * 4, glPlugin.getVertexBuffer());
+            int program = glPlugin.getProgram();
+            GLES20.glUseProgram(program);
 
-        int uvHandle = GLES20.glGetAttribLocation(program, "uv");
-        GLES20.glEnableVertexAttribArray(uvHandle);
-        GLES20.glVertexAttribPointer(uvHandle, 2, GLES20.GL_FLOAT, false, 2 * 4, glPlugin.getUVBuffer());
+            int positionHandle = GLES20.glGetAttribLocation(program, "position");
+            GLES20.glEnableVertexAttribArray(positionHandle);
+            GLES20.glVertexAttribPointer(positionHandle, 2, GLES20.GL_FLOAT, false, 2 * 4, glPlugin.getVertexBuffer());
 
-        int textureHandle = GLES20.glGetUniformLocation(program, "texture");
-        GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
-        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureHandle);
-        GLES20.glUniform1i(textureHandle, 0);
+            int uvHandle = GLES20.glGetAttribLocation(program, "uv");
+            GLES20.glEnableVertexAttribArray(uvHandle);
+            GLES20.glVertexAttribPointer(uvHandle, 2, GLES20.GL_FLOAT, false, 2 * 4, glPlugin.getUVBuffer());
 
-        int projectionHandle = GLES20.glGetUniformLocation(program, "projection");
-        int viewHandle = GLES20.glGetUniformLocation(program, "modelView");
-        int sizeHandle = GLES20.glGetUniformLocation(program, "size");
-        int clippingHandle = GLES20.glGetUniformLocation(program, "clipping");
+            int textureHandle = GLES20.glGetUniformLocation(program, "texture");
+            GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
+            GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureHandle);
+            GLES20.glUniform1i(textureHandle, 0);
+
+            int projectionHandle = GLES20.glGetUniformLocation(program, "projection");
+            int viewHandle = GLES20.glGetUniformLocation(program, "modelView");
+            int sizeHandle = GLES20.glGetUniformLocation(program, "size");
+            int clippingHandle = GLES20.glGetUniformLocation(program, "clipping");
 
 
-        GLRendererPlugin.mat32ToFloat16(projectoionData, projection);
-        GLES20.glUniformMatrix4fv(projectionHandle, 1, false, projectoionData, 0);
+            GLRendererPlugin.mat32ToFloat16(projectoionData, projection);
+            GLES20.glUniformMatrix4fv(projectionHandle, 1, false, projectoionData, 0);
 
-        while (it.hasNext()) {
-            Sprite sprite = it.next();
+            while (it.hasNext()) {
+                Sprite sprite = it.next();
 
-            if (sprite.getVisible()) {
-                Transform2D transform2D = sprite.getEntity().getComponent(Transform2D.class);
-                renderSprite(glPlugin, sprite, transform2D, view, viewHandle, sizeHandle, clippingHandle);
+                if (sprite.getVisible()) {
+                    Transform2D transform2D = sprite.getEntity().getComponent(Transform2D.class);
+                    renderSprite(glPlugin, sprite, transform2D, view, viewHandle, sizeHandle, clippingHandle);
+                }
             }
+
+
+            GLES20.glDisableVertexAttribArray(positionHandle);
+            GLES20.glDisableVertexAttribArray(uvHandle);
         }
-
-
-        GLES20.glDisableVertexAttribArray(positionHandle);
-        GLES20.glDisableVertexAttribArray(uvHandle);
-
 
         return this;
     }

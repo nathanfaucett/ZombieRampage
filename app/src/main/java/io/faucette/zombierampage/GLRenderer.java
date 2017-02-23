@@ -13,14 +13,18 @@ import io.faucette.scene_renderer.SceneRenderer;
 public class GLRenderer implements GLSurfaceView.Renderer {
     public Game game;
 
+    private float width;
+    private float height;
+
+    private boolean surfaceCreated;
     private SceneRenderer sceneRenderer;
     private Context context;
 
 
     public GLRenderer(Context context) {
         this.context = context;
-        game = new Game();
-        setScene(game.scene);
+        game = new Game(this);
+        surfaceCreated = false;
     }
 
     public void setScene(Scene s) {
@@ -33,6 +37,12 @@ public class GLRenderer implements GLSurfaceView.Renderer {
         sceneRenderer.addRendererPlugin(new GLRendererPlugin());
         sceneRenderer.addRenderer(new SpriteGLRenderer(context));
         sceneRenderer.addRenderer(new UIGLRenderer(context));
+
+        if (surfaceCreated) {
+            sceneRenderer.init();
+        }
+
+        onResize();
     }
 
     public void onDrawFrame(GL10 unused) {
@@ -42,12 +52,19 @@ public class GLRenderer implements GLSurfaceView.Renderer {
 
     @Override
     public void onSurfaceCreated(GL10 gl, javax.microedition.khronos.egl.EGLConfig config) {
-        game.init();
-        sceneRenderer.init();
+        surfaceCreated = true;
     }
 
     public void onSurfaceChanged(GL10 unused, int width, int height) {
-        game.scene.getPlugin(InputPlugin.class).setDimensions((float) width, (float) height);
-        sceneRenderer.getRendererPlugin(GLRendererPlugin.class).set(width, height);
+        this.width = (float) width;
+        this.height = (float) height;
+        onResize();
+    }
+
+    public void onResize() {
+        if (game.scene != null) {
+            game.scene.getPlugin(InputPlugin.class).setDimensions(width, height);
+            sceneRenderer.getRendererPlugin(GLRendererPlugin.class).set((int) width, (int) height);
+        }
     }
 }

@@ -13,6 +13,38 @@ import io.faucette.ui_component.UI;
 
 public class UIEntities {
 
+
+    public static Entity createPlay() {
+        UIControl uiControl = new UIControl()
+                .setOffset(new Vec2(0f, 0f))
+                .setAnchor(UIControl.Anchor.Center);
+
+        uiControl.on("touch", new Emitter.Callback() {
+            @Override
+            public void call(Emitter emitter, Object[] objects) {
+                UIControl uiControl = (UIControl) emitter;
+                Scene scene = uiControl.getEntity().getScene();
+                MenuControl menuControl = scene.getEntity("menu_control").getComponent(MenuControl.class);
+                menuControl.loadGame();
+            }
+        });
+
+        return new Entity("play_btn_ui")
+                .addComponent(uiControl)
+                .addComponent(new Transform2D())
+                .addComponent(new UI()
+                        .setY(0.5f)
+                        .setH(0.5f)
+                        .setWidth(256f)
+                        .setHeight(128f)
+                        .setImage(R.drawable.play_btn));
+    }
+
+    public static Entity createMainMenu() {
+        return new Entity("main_menu_ui")
+                .addChild(UIEntities.createPlay());
+    }
+
     public static Entity createResume() {
         UIControl uiControl = new UIControl()
                 .setOffset(new Vec2(0f, -64f))
@@ -51,7 +83,10 @@ public class UIEntities {
         uiControl.on("touch", new Emitter.Callback() {
             @Override
             public void call(Emitter emitter, Object[] objects) {
-                System.out.println("Quit to menu.");
+                UIControl uiControl = (UIControl) emitter;
+                Scene scene = uiControl.getEntity().getScene();
+                LevelControl levelControl = scene.getEntity("level_control").getComponent(LevelControl.class);
+                levelControl.loadMenu();
             }
         });
 

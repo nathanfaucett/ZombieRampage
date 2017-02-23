@@ -25,6 +25,10 @@ public class RigidBodyManager extends PauseableManager {
     @Override
     public RigidBodyManager update() {
 
+        if (isPaused()) {
+            return this;
+        }
+
         super.update();
 
         contacts.clear();

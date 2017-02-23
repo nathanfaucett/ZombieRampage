@@ -149,6 +149,10 @@ public class StatusControl extends Pauseable {
                     Scene scene = entity.getScene();
                     scene.removeEntity(entity);
 
+                    if (entity.getTag() == "enemy") {
+                        getLevelControl().enemyKilled();
+                    }
+
                     if (dropItem && (Math.random() < dropChance)) {
                         Vec2 position = entity.getComponent(Transform2D.class).getPosition();
                         float chance = (float) Math.random();

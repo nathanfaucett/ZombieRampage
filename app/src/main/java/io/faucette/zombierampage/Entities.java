@@ -227,13 +227,21 @@ public class Entities {
                         .setImage(R.drawable.reg_enemy));
     }
 
-    public static Entity createCamera() {
+    public static Entity createGameCamera() {
         return new Entity("camera")
                 .addComponent(new Camera()
                         .setOrthographicSize(1f)
                         .setBackground(new Vec4(0f, 0f, 0f, 1f)))
                 .addComponent(new Transform2D())
                 .addComponent(new CameraControl());
+    }
+
+    public static Entity createMenuCamera() {
+        return new Entity("camera")
+                .addComponent(new Camera()
+                        .setOrthographicSize(1f)
+                        .setBackground(new Vec4(0f, 0f, 0f, 1f)))
+                .addComponent(new Transform2D());
     }
 
     public static Entity createTile(LevelGenerator.Section section, float size) {
