@@ -11,7 +11,6 @@ import io.faucette.math.Vec4;
 import io.faucette.scene_graph.Entity;
 import io.faucette.sprite_component.Sprite;
 import io.faucette.transform_components.Transform2D;
-import io.faucette.ui_component.UI;
 
 
 public class Entities {
@@ -199,12 +198,12 @@ public class Entities {
         return -1;
     }
 
-    public static Entity createRegEnemy(float x, float y) {
+    public static Entity createEnemy(float x, float y, int hp, float speed, Integer image) {
         return new Entity()
                 .setTag("enemy")
                 .addComponent(new Transform2D()
                         .setPosition(new Vec2(x, y)))
-                .addComponent(new StatusControl(4, 1, 0.1f))
+                .addComponent(new StatusControl(hp, 1, speed))
                 .addComponent(new EnemyControl())
                 .addComponent(new AnimationControl())
                 .addComponent(new RigidBody(RigidBody.Type.Dynamic)
@@ -224,7 +223,19 @@ public class Entities {
                         .setLayer(LAYER)
                         .setWidth(0.25f)
                         .setHeight(0.25f)
-                        .setImage(R.drawable.reg_enemy));
+                        .setImage(image));
+    }
+
+    public static Entity createRegEnemy(float x, float y) {
+        return Entities.createEnemy(x, y, 3, 0.1f, R.drawable.reg_enemy);
+    }
+
+    public static Entity createFastEnemy(float x, float y) {
+        return Entities.createEnemy(x, y, 5, 0.15f, R.drawable.fast_enemy);
+    }
+
+    public static Entity createSlowEnemy(float x, float y) {
+        return Entities.createEnemy(x, y, 10, 0.05f, R.drawable.slow_enemy);
     }
 
     public static Entity createGameCamera() {

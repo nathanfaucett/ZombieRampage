@@ -3,7 +3,6 @@ package io.faucette.zombierampage;
 
 import java.util.HashMap;
 
-import io.faucette.scene_graph.Component;
 import io.faucette.sprite_component.Sprite;
 
 

@@ -1,9 +1,6 @@
 package io.faucette.zombierampage;
 
 
-import io.faucette.scene_graph.Component;
-
-
 public class FlamethrowerBulletControl extends Pauseable {
     private float life;
     private float lifeTime;

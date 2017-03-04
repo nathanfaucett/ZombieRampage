@@ -11,9 +11,9 @@ import io.faucette.transform_components.Transform2D;
 
 
 public class Game {
-    private GLRenderer renderer;
     private static int hearts = 4;
     public Scene scene = null;
+    private GLRenderer renderer;
     private Scene nextScene = null;
 
 
@@ -33,6 +33,7 @@ public class Game {
         scene.init();
         nextScene = scene;
     }
+
     public void loadGame() {
         Scene scene = new Scene();
 
@@ -42,6 +43,7 @@ public class Game {
         scene.init();
         nextScene = scene;
     }
+
     private void addGameEntitiesToScene(Scene scene) {
         scene.addPlugin(new InputPlugin());
 
@@ -65,6 +67,7 @@ public class Game {
 
         scene.addEntity(new Entity("level_control").addComponent(new LevelControl(renderer)));
     }
+
     private void addGameUIEntitiesToScene(Scene scene) {
         scene.addEntity(UIEntities.createHealth(hearts));
         scene.addEntity(UIEntities.createGun());

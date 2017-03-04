@@ -6,7 +6,6 @@ import java.util.List;
 
 import io.faucette.math.AABB2;
 import io.faucette.math.Vec2;
-import io.faucette.scene_graph.Component;
 import io.faucette.scene_graph.ComponentManager;
 import io.faucette.scene_graph.Entity;
 import io.faucette.scene_graph.Scene;

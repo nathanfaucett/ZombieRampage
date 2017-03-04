@@ -2,6 +2,7 @@ package io.faucette.zombierampage;
 
 
 import android.content.Context;
+import android.graphics.Rect;
 import android.opengl.GLES20;
 
 import java.util.Iterator;
@@ -73,6 +74,7 @@ public class UIGLRenderer extends Renderer {
         int modelViewHandle = GLES20.glGetUniformLocation(program, "modelView");
         int sizeHandle = GLES20.glGetUniformLocation(program, "size");
         int clippingHandle = GLES20.glGetUniformLocation(program, "clipping");
+        int alphaHandle = GLES20.glGetUniformLocation(program, "alpha");
 
         GLES20.glUniformMatrix4fv(projectionHandle, 1, false, projectoionData, 0);
 
@@ -81,7 +83,7 @@ public class UIGLRenderer extends Renderer {
 
             if (ui.getVisible()) {
                 Transform2D transform2D = ui.getEntity().getComponent(Transform2D.class);
-                renderUI(glPlugin, ui, transform2D, modelViewHandle, sizeHandle, clippingHandle);
+                renderUI(glPlugin, ui, transform2D, modelViewHandle, sizeHandle, clippingHandle, alphaHandle);
             }
         }
 
@@ -99,8 +101,21 @@ public class UIGLRenderer extends Renderer {
             Transform2D transform2D,
             int modelViewHandle,
             int sizeHandle,
-            int clippingHandle
+            int clippingHandle,
+            int alphaHandle
     ) {
+        Integer texture = glPlugin.getUITexture(context, ui);
+
+        if (ui.getText() != "") {
+            Rect bounds = glPlugin.getTextBounds(ui);
+            ui.setWidth(bounds.width());
+            ui.setHeight(bounds.height());
+            ui.setX(0f);
+            ui.setY(0f);
+            ui.setW(1f);
+            ui.setH(1f);
+        }
+
         sizeData[0] = ui.getWidth();
         sizeData[1] = ui.getHeight();
 
@@ -115,8 +130,9 @@ public class UIGLRenderer extends Renderer {
         GLES20.glUniformMatrix4fv(modelViewHandle, 1, false, modelViewData, 0);
         GLES20.glUniform2fv(sizeHandle, 1, sizeData, 0);
         GLES20.glUniform4fv(clippingHandle, 1, clippingData, 0);
+        GLES20.glUniform1f(alphaHandle, ui.getAlpha());
 
-        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, glPlugin.getTexture(context, ui.getImage()));
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, texture);
 
         GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, 4);
     }

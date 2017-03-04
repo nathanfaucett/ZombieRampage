@@ -75,6 +75,7 @@ public class UIEntities {
                         .setHeight(128f)
                         .setImage(R.drawable.resume_btn));
     }
+
     public static Entity createQuit() {
         UIControl uiControl = new UIControl()
                 .setOffset(new Vec2(0f, 64f))
@@ -128,7 +129,7 @@ public class UIEntities {
         return new Entity("pause_btn_ui")
                 .addComponent(uiControl)
                 .addComponent(new Transform2D()
-                    .setPosition(new Vec2(40f, 40f)))
+                        .setPosition(new Vec2(40f, 40f)))
                 .addComponent(new UI()
                         .setY(0.5f)
                         .setH(0.5f)
@@ -182,5 +183,20 @@ public class UIEntities {
                         .setWidth(96f)
                         .setHeight(96f)
                         .setImage(R.drawable.pistol));
+    }
+
+    public static Entity createWaveText(int waveNo) {
+        UIControl uiControl = new UIControl()
+                .setOffset(new Vec2(0f, 0f))
+                .setAnchor(UIControl.Anchor.Center);
+
+        return new Entity("wave_text")
+                .addComponent(uiControl)
+                .addComponent(new WaveTextControl(0.25f, 0.25f))
+                .addComponent(new Transform2D())
+                .addComponent(new UI()
+                        .setFontColor(0xFF931C1C)
+                        .setFontSize(32)
+                        .setText("Wave " + waveNo));
     }
 }

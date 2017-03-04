@@ -34,7 +34,7 @@ public class GLRenderer implements GLSurfaceView.Renderer {
 
         sceneRenderer = new SceneRenderer(s);
 
-        sceneRenderer.addRendererPlugin(new GLRendererPlugin());
+        sceneRenderer.addRendererPlugin(new GLRendererPlugin(context));
         sceneRenderer.addRenderer(new SpriteGLRenderer(context));
         sceneRenderer.addRenderer(new UIGLRenderer(context));
 

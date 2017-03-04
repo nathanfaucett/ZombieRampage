@@ -8,24 +8,13 @@ import io.faucette.ui_component.UI;
 
 
 public class UIControl extends Component {
-    public enum Anchor {
-        TopLeft,
-        TopRight,
-        BottomLeft,
-        BottomRight,
-        Center,
-        None,
-    }
-
     public Vec2 position;
     public Vec2 offset;
     public Anchor anchor;
     private float screenWidth;
     private float screenHeight;
-
     private boolean hover;
     private boolean lastHover;
-
     public UIControl() {
 
         super();
@@ -41,6 +30,7 @@ public class UIControl extends Component {
         this.anchor = anchor;
         return this;
     }
+
     public UIControl setOffset(Vec2 offset) {
         this.offset = offset;
         return this;
@@ -114,5 +104,14 @@ public class UIControl extends Component {
         lastHover = hover;
 
         return this;
+    }
+
+    public enum Anchor {
+        TopLeft,
+        TopRight,
+        BottomLeft,
+        BottomRight,
+        Center,
+        None,
     }
 }

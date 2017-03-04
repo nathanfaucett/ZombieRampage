@@ -2,7 +2,6 @@ package io.faucette.zombierampage;
 
 
 import io.faucette.math.Vec2;
-import io.faucette.scene_graph.Component;
 import io.faucette.transform_components.Transform2D;
 import io.faucette.ui_component.UI;
 

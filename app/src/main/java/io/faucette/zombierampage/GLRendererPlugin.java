@@ -4,6 +4,11 @@ package io.faucette.zombierampage;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Rect;
+import android.graphics.Typeface;
 import android.opengl.GLES20;
 import android.opengl.GLUtils;
 import android.util.Log;
@@ -20,6 +25,7 @@ import io.faucette.math.Mat32;
 import io.faucette.math.Vec4;
 import io.faucette.scene_graph.Scene;
 import io.faucette.scene_renderer.RendererPlugin;
+import io.faucette.ui_component.UI;
 import io.faucette.ui_component.UIManager;
 
 
@@ -44,11 +50,13 @@ public class GLRendererPlugin extends RendererPlugin {
 
                     "uniform sampler2D texture;" +
                     "uniform vec4 clipping;" +
+                    "uniform float alpha;" +
 
                     "varying vec2 vUv;" +
 
                     "void main() {" +
                     "  gl_FragColor = texture2D(texture, clipping.xy + (vUv * clipping.zw));" +
+                    "  gl_FragColor = gl_FragColor * alpha;"+
                     "}";
     private static float vertexData[] = {
             0.5f, 0.5f,
@@ -63,16 +71,21 @@ public class GLRendererPlugin extends RendererPlugin {
             0f, 0f
     };
 
-
+    private Typeface font;
     private Map<Integer, Integer> textures;
+    private Map<String, Integer> textTextures;
+    private Map<String, Rect> textBounds;
     private int program = -1;
 
     private FloatBuffer vertexBuffer;
     private FloatBuffer uvBuffer;
 
 
-    public GLRendererPlugin() {
+    public GLRendererPlugin(Context context) {
         textures = new HashMap<>();
+        textTextures = new HashMap<>();
+        textBounds = new HashMap<>();
+        font = Typeface.createFromAsset(context.getAssets(), "fonts/pixel.ttf");
     }
 
     private static int loadShader(int shaderType, String source) {
@@ -113,17 +126,13 @@ public class GLRendererPlugin extends RendererPlugin {
         return program;
     }
 
-    public static int loadTexture(final Context context, final int resourceId) {
+    public static int loadBitmap(final Bitmap bitmap) {
         final int[] textures = new int[1];
 
         GLES20.glGenTextures(1, textures, 0);
         int textureHandle = textures[0];
 
         if (textureHandle != 0) {
-            BitmapFactory.Options options = new BitmapFactory.Options();
-            options.inScaled = false;
-            final Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), resourceId, options);
-
             GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureHandle);
 
             GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_NEAREST);
@@ -139,6 +148,12 @@ public class GLRendererPlugin extends RendererPlugin {
         }
 
         return textureHandle;
+    }
+
+    public static int loadTexture(final Context context, final int resourceId) {
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inScaled = false;
+        return loadBitmap(BitmapFactory.decodeResource(context.getResources(), resourceId, options));
     }
 
     public static float[] mat32ToFloat16(float[] out, Mat32 mat32) {
@@ -167,6 +182,38 @@ public class GLRendererPlugin extends RendererPlugin {
         return out;
     }
 
+    private static String getTextId(String text, int fontSize, int fontColor) {
+        return text + ":" + fontSize + ":" + fontColor;
+    }
+
+    public Rect getTextBounds(UI ui) {
+        return textBounds.get(getTextId(ui.getText(), ui.getFontSize(), ui.getFontColor()));
+    }
+
+    public Bitmap createTextBitmap(String text, int fontSize, int fontColor) {
+        Rect bounds = new Rect();
+        Paint paint = new Paint();
+
+        paint.setAntiAlias(false);
+        paint.setTypeface(font);
+        paint.setTextSize(fontSize);
+        paint.setColor(fontColor);
+        paint.setFakeBoldText(true);
+        paint.getTextBounds(text, 0, text.length(), bounds);
+
+        Bitmap bitmap = Bitmap.createBitmap(bounds.width(), bounds.height(), Bitmap.Config.ARGB_4444);
+        Canvas canvas = new Canvas(bitmap);
+        bitmap.eraseColor(0x00000000);
+
+        int x = (bitmap.getWidth() - bounds.width()) / 2;
+        int y = (bitmap.getHeight() + bounds.height()) / 2;
+        canvas.drawText(text, x, y, paint);
+
+        textBounds.put(getTextId(text, fontSize, fontColor), bounds);
+
+        return bitmap;
+    }
+
     @Override
     public GLRendererPlugin init() {
 
@@ -187,8 +234,16 @@ public class GLRendererPlugin extends RendererPlugin {
         super.clear();
 
         int[] textureHandle = new int[1];
-        Iterator it = textures.entrySet().iterator();
 
+        Iterator it = textures.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry pair = (Map.Entry) it.next();
+            textureHandle[0] = (Integer) pair.getValue();
+            GLES20.glDeleteTextures(1, textureHandle, 0);
+            it.remove();
+        }
+
+        it = textTextures.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry pair = (Map.Entry) it.next();
             textureHandle[0] = (Integer) pair.getValue();
@@ -223,6 +278,27 @@ public class GLRendererPlugin extends RendererPlugin {
 
     public Map<Integer, Integer> getTextures() {
         return textures;
+    }
+
+    public Integer getTextTexture(final Context context, String text, int fontSize, int fontColor) {
+        String id = GLRendererPlugin.getTextId(text, fontSize, fontColor);
+
+        if (!textTextures.containsKey(id)) {
+            textTextures.put(id, new Integer(
+                    GLRendererPlugin.loadBitmap(
+                            createTextBitmap(text, fontSize, fontColor)
+                    )
+            ));
+        }
+        return textTextures.get(id);
+    }
+
+    public Integer getUITexture(final Context context, UI ui) {
+        if (ui.getText() == "") {
+            return getTexture(context, ui.getImage());
+        } else {
+            return getTextTexture(context, ui.getText(), ui.getFontSize(), ui.getFontColor());
+        }
     }
 
     public Integer getTexture(final Context context, Integer texture) {
