@@ -12,21 +12,29 @@ public class StatusControl extends Pauseable {
     private int hp;
     private int maxHp;
     private int pp;
+
     private float speed;
+
     private float birthTime;
     private float hitTime;
+
     private float dyingTime;
     private float deadTime;
+
     private State state;
+
+    private int points = 0;
+
     private boolean allowHitWhileHit = true;
-    private boolean dropItem = true;
-    private float dropChance = 0.75f;
+    private boolean allowDropItem = true;
+
     private float birthTimeCurrent = 0f;
     private float hitTimeCurrent = 0f;
     private float dyingTimeCurrent = 0f;
     private float deadTimeCurrent = 0f;
 
-    public StatusControl(int hp, int pp, float speed, float birthTime, float hitTime, float dyingTime, float deadTime) {
+
+    public StatusControl(int hp, int pp, float speed, float birthTime, float hitTime, float dyingTime, float deadTime, int points) {
         this.maxHp = this.hp = hp;
         this.pp = pp;
         this.speed = speed;
@@ -34,15 +42,16 @@ public class StatusControl extends Pauseable {
         this.hitTime = hitTime;
         this.dyingTime = dyingTime;
         this.deadTime = deadTime;
+        this.points = points;
         state = State.Birth;
     }
 
-    public StatusControl(int hp, int pp, float speed, float birthTime) {
-        this(hp, pp, speed, birthTime, 0.25f, 1f, 3f);
+    public StatusControl(int hp, int pp, float speed, float birthTime, int points) {
+        this(hp, pp, speed, birthTime, 0.25f, 1f, 3f, points);
     }
 
-    public StatusControl(int hp, int pp, float speed) {
-        this(hp, pp, speed, 2f);
+    public StatusControl(int hp, int pp, float speed, int points) {
+        this(hp, pp, speed, 2f, points);
     }
 
     public StatusControl setAllowHitWhileHit(boolean allowHitWhileHit) {
@@ -50,14 +59,13 @@ public class StatusControl extends Pauseable {
         return this;
     }
 
-    public StatusControl setDropItem(boolean dropItem) {
-        this.dropItem = dropItem;
+    public StatusControl setAllowDropItem(boolean allowDropItem) {
+        this.allowDropItem = allowDropItem;
         return this;
     }
 
-    public StatusControl setDropChance(float dropChance) {
-        this.dropChance = dropChance;
-        return this;
+    public int getPoints() {
+        return points;
     }
 
     public float getSpeed() {
@@ -149,23 +157,12 @@ public class StatusControl extends Pauseable {
                     scene.removeEntity(entity);
 
                     if (entity.getTag() == "enemy") {
-                        getLevelControl().enemyKilled();
+                        getLevelControl().enemyKilled(points);
+                    } else if (entity.getTag() == "player") {
+                        getLevelControl().gameOver();
                     }
 
-                    if (dropItem && (Math.random() < dropChance)) {
-                        Vec2 position = entity.getComponent(Transform2D.class).getPosition();
-                        float chance = (float) Math.random();
-
-                        if (chance < 0.4f) {
-                            scene.addEntity(Entities.createAmmo(PlayerControl.GunType.Shotgun, position));
-                        } else if (chance < 0.6f) {
-                            scene.addEntity(Entities.createAmmo(PlayerControl.GunType.Uzi, position));
-                        } else if (chance < 0.8f) {
-                            scene.addEntity(Entities.createHealth(position));
-                        } else if (chance < 1.0f) {
-                            scene.addEntity(Entities.createAmmo(PlayerControl.GunType.FlameThrower, position));
-                        }
-                    }
+                    dropItem();
                 }
                 break;
             }
@@ -180,6 +177,27 @@ public class StatusControl extends Pauseable {
             }
         }
         return this;
+    }
+
+    private void dropItem() {
+        float dropChance = getLevelControl().getDropChance();
+
+        if (allowDropItem && (Math.random() < dropChance)) {
+            Vec2 position = entity.getComponent(Transform2D.class).getPosition();
+            float chance = (float) Math.random();
+
+            Scene scene = entity.getScene();
+
+            if (chance < 0.4f) {
+                scene.addEntity(Entities.createAmmo(PlayerControl.GunType.Shotgun, position));
+            } else if (chance < 0.6f) {
+                scene.addEntity(Entities.createAmmo(PlayerControl.GunType.Uzi, position));
+            } else if (chance < 0.8f) {
+                scene.addEntity(Entities.createHealth(position));
+            } else if (chance < 1.0f) {
+                scene.addEntity(Entities.createAmmo(PlayerControl.GunType.FlameThrower, position));
+            }
+        }
     }
 
     public enum State {

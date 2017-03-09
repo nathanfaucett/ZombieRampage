@@ -26,9 +26,9 @@ public class Entities {
         return new Entity("player")
                 .setTag("player")
                 .addComponent(new Transform2D())
-                .addComponent(new StatusControl(health, 0, 0.2f, 0f)
+                .addComponent(new StatusControl(health, 0, 0.2f, 0f, 0)
                         .setAllowHitWhileHit(false)
-                        .setDropItem(false))
+                        .setAllowDropItem(false))
                 .addComponent(new PlayerControl())
                 .addComponent(new AnimationControl())
                 .addComponent(new RigidBody(RigidBody.Type.Dynamic)
@@ -198,12 +198,12 @@ public class Entities {
         return -1;
     }
 
-    public static Entity createEnemy(float x, float y, int hp, float speed, Integer image) {
+    public static Entity createEnemy(float x, float y, int hp, float speed, int points, Integer image) {
         return new Entity()
                 .setTag("enemy")
                 .addComponent(new Transform2D()
                         .setPosition(new Vec2(x, y)))
-                .addComponent(new StatusControl(hp, 1, speed))
+                .addComponent(new StatusControl(hp, 1, speed, points))
                 .addComponent(new EnemyControl())
                 .addComponent(new AnimationControl())
                 .addComponent(new RigidBody(RigidBody.Type.Dynamic)
@@ -227,15 +227,15 @@ public class Entities {
     }
 
     public static Entity createRegEnemy(float x, float y) {
-        return Entities.createEnemy(x, y, 3, 0.1f, R.drawable.reg_enemy);
+        return Entities.createEnemy(x, y, 3, 0.1f, 1, R.drawable.reg_enemy);
     }
 
     public static Entity createFastEnemy(float x, float y) {
-        return Entities.createEnemy(x, y, 5, 0.15f, R.drawable.fast_enemy);
+        return Entities.createEnemy(x, y, 5, 0.15f, 2, R.drawable.fast_enemy);
     }
 
     public static Entity createSlowEnemy(float x, float y) {
-        return Entities.createEnemy(x, y, 10, 0.05f, R.drawable.slow_enemy);
+        return Entities.createEnemy(x, y, 10, 0.05f, 3, R.drawable.slow_enemy);
     }
 
     public static Entity createGameCamera() {

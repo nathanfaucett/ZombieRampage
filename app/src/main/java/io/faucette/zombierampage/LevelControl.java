@@ -16,6 +16,7 @@ public class LevelControl extends Component {
 
     private GLRenderer renderer;
 
+    private int points = 0;
     private int wave = 0;
     private int enemiesOrigTotal = 8;
     private int enemiesTotal = enemiesOrigTotal;
@@ -41,6 +42,28 @@ public class LevelControl extends Component {
         renderer.game.loadMenu();
     }
 
+    public void restartGame() {
+        renderer.game.loadGame();
+    }
+
+    public void showBanner() {
+        renderer.activityControl.showBanner();
+    }
+    public void hideBanner() {
+        renderer.activityControl.hideBanner();
+    }
+
+    public void gameOver() {
+        Scene scene = entity.getScene();
+        scene.removeEntity(scene.getEntity("pause_btn_ui"));
+        scene.removeEntity(scene.getEntity("left_analog"));
+        scene.removeEntity(scene.getEntity("right_analog"));
+        scene.removeEntity(scene.getEntity("health_ui"));
+        scene.removeEntity(scene.getEntity("gun_ui"));
+        showBanner();
+        scene.addEntity(UIEntities.createGameOverMenu());
+    }
+
     public boolean isPaused() {
         return playing == false;
     }
@@ -50,11 +73,26 @@ public class LevelControl extends Component {
     }
 
     public void pause() {
+        showBanner();
         playing = false;
     }
 
     public void resume() {
+        hideBanner();
         playing = true;
+    }
+
+    public float getDropChance() {
+        if (wave > 1) {
+            return 1f / wave;
+        } else {
+            return 0.5f;
+        }
+    }
+
+    public LevelControl init() {
+        hideBanner();
+        return this;
     }
 
     public LevelControl update() {
@@ -96,8 +134,13 @@ public class LevelControl extends Component {
         return this;
     }
 
-    public void enemyKilled() {
-        enemiesLeft -= 1;
+    public void enemyKilled(int points) {
+        this.points += points;
+        this.enemiesLeft -= 1;
+    }
+
+    public int getPoints() {
+        return points;
     }
 
     private void reset() {

@@ -102,9 +102,41 @@ public class UIEntities {
                         .setImage(R.drawable.quit_btn));
     }
 
+    public static Entity createRestart() {
+        UIControl uiControl = new UIControl()
+                .setOffset(new Vec2(0f, -64f))
+                .setAnchor(UIControl.Anchor.Center);
+
+        uiControl.on("touch", new Emitter.Callback() {
+            @Override
+            public void call(Emitter emitter, Object[] objects) {
+                UIControl uiControl = (UIControl) emitter;
+                Scene scene = uiControl.getEntity().getScene();
+                LevelControl levelControl = scene.getEntity("level_control").getComponent(LevelControl.class);
+                levelControl.restartGame();
+            }
+        });
+
+        return new Entity("restart_btn_ui")
+                .addComponent(uiControl)
+                .addComponent(new Transform2D())
+                .addComponent(new UI()
+                        .setY(0.5f)
+                        .setH(0.5f)
+                        .setWidth(256f)
+                        .setHeight(128f)
+                        .setImage(R.drawable.restart_btn));
+    }
+
     public static Entity createPauseMenu() {
         return new Entity("pause_menu_ui")
                 .addChild(UIEntities.createResume())
+                .addChild(UIEntities.createQuit());
+    }
+
+    public static Entity createGameOverMenu() {
+        return new Entity("game_over_ui")
+                .addChild(UIEntities.createRestart())
                 .addChild(UIEntities.createQuit());
     }
 
@@ -183,6 +215,21 @@ public class UIEntities {
                         .setWidth(96f)
                         .setHeight(96f)
                         .setImage(R.drawable.pistol));
+    }
+
+    public static Entity createPoints() {
+        UIControl uiControl = new UIControl()
+                .setOffset(new Vec2(-8f, 8f))
+                .setAnchor(UIControl.Anchor.TopRight);
+
+        return new Entity("points")
+                .addComponent(uiControl)
+                .addComponent(new PointsControl())
+                .addComponent(new Transform2D())
+                .addComponent(new UI()
+                        .setFontColor(0xFF931C1C)
+                        .setFontSize(32)
+                        .setText("0"));
     }
 
     public static Entity createWaveText(int waveNo) {

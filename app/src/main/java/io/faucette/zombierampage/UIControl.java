@@ -11,10 +11,15 @@ public class UIControl extends Component {
     public Vec2 position;
     public Vec2 offset;
     public Anchor anchor;
+
+    private float lastWidth;
+    private float lastHeight;
     private float screenWidth;
     private float screenHeight;
     private boolean hover;
     private boolean lastHover;
+
+
     public UIControl() {
 
         super();
@@ -39,8 +44,9 @@ public class UIControl extends Component {
     private UIControl updatePosition(InputPlugin input) {
         if (anchor != Anchor.None) {
             UI ui = entity.getComponent(UI.class);
-            float hw = ui.getWidth() * 0.5f;
-            float hh = ui.getHeight() * 0.5f;
+
+            float hw = lastWidth * 0.5f;
+            float hh = lastHeight * 0.5f;
 
             switch (anchor) {
                 case TopLeft:
@@ -61,6 +67,22 @@ public class UIControl extends Component {
                     break;
                 case Center:
                     position.x = screenWidth * 0.5f;
+                    position.y = screenHeight * 0.5f;
+                    break;
+                case CenterTop:
+                    position.x = screenWidth * 0.5f;
+                    position.y = hh;
+                    break;
+                case CenterRight:
+                    position.x = screenWidth - hw;
+                    position.y = screenHeight * 0.5f;
+                    break;
+                case CenterBottom:
+                    position.x = screenWidth * 0.5f;
+                    position.y = screenHeight - hh;
+                    break;
+                case CenterLeft:
+                    position.x = hw;
                     position.y = screenHeight * 0.5f;
                     break;
             }
@@ -89,8 +111,15 @@ public class UIControl extends Component {
             updatePosition(input);
         }
 
-        hover = false;
         UI ui = entity.getComponent(UI.class);
+
+        if (lastWidth != ui.getWidth() || lastHeight != ui.getHeight()) {
+            lastWidth = ui.getWidth();
+            lastHeight = ui.getHeight();
+            updatePosition(input);
+        }
+
+        hover = false;
         for (InputPlugin.Touch touch : input.getTouches()) {
             if (ui.contains(touch.position)) {
                 entity.getComponent(UI.class).setY(0f);
@@ -111,7 +140,14 @@ public class UIControl extends Component {
         TopRight,
         BottomLeft,
         BottomRight,
+
         Center,
+
+        CenterTop,
+        CenterRight,
+        CenterBottom,
+        CenterLeft,
+
         None,
     }
 }

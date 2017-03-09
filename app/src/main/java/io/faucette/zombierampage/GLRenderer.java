@@ -20,9 +20,12 @@ public class GLRenderer implements GLSurfaceView.Renderer {
     private SceneRenderer sceneRenderer;
     private Context context;
 
+    public ActivityControl activityControl;
 
-    public GLRenderer(Context context) {
+
+    public GLRenderer(Context context, ActivityControl activityControl) {
         this.context = context;
+        this.activityControl = activityControl;
         game = new Game(this);
         surfaceCreated = false;
     }
@@ -46,8 +49,10 @@ public class GLRenderer implements GLSurfaceView.Renderer {
     }
 
     public void onDrawFrame(GL10 unused) {
-        game.update();
-        sceneRenderer.render();
+        if (surfaceCreated) {
+            game.update();
+            sceneRenderer.render();
+        }
     }
 
     @Override

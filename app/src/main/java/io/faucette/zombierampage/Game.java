@@ -73,6 +73,7 @@ public class Game {
         scene.addEntity(UIEntities.createGun());
         scene.addEntity(UIEntities.createAnalog(AnalogControl.Side.Left));
         scene.addEntity(UIEntities.createAnalog(AnalogControl.Side.Right));
+        scene.addEntity(UIEntities.createPoints());
         scene.addEntity(UIEntities.createPauseBtn());
     }
 

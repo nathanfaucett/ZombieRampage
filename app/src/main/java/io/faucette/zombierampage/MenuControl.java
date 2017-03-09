@@ -13,7 +13,21 @@ public class MenuControl extends Component {
         this.renderer = renderer;
     }
 
+    @Override
+    public MenuControl init() {
+        showBanner();
+        return this;
+    }
+
     public void loadGame() {
+        hideBanner();
         renderer.game.loadGame();
+    }
+
+    public void showBanner() {
+        renderer.activityControl.showBanner();
+    }
+    public void hideBanner() {
+        renderer.activityControl.hideBanner();
     }
 }
