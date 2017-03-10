@@ -12,15 +12,12 @@ import io.faucette.scene_renderer.SceneRenderer;
 
 public class GLRenderer implements GLSurfaceView.Renderer {
     public Game game;
-
+    public ActivityControl activityControl;
     private float width;
     private float height;
-
     private boolean surfaceCreated;
     private SceneRenderer sceneRenderer;
     private Context context;
-
-    public ActivityControl activityControl;
 
 
     public GLRenderer(Context context, ActivityControl activityControl) {

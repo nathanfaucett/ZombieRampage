@@ -5,7 +5,6 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.Typeface;
@@ -56,7 +55,7 @@ public class GLRendererPlugin extends RendererPlugin {
 
                     "void main() {" +
                     "  gl_FragColor = texture2D(texture, clipping.xy + (vUv * clipping.zw));" +
-                    "  gl_FragColor = gl_FragColor * alpha;"+
+                    "  gl_FragColor = gl_FragColor * alpha;" +
                     "}";
     private static float vertexData[] = {
             0.5f, 0.5f,

@@ -27,6 +27,7 @@ public class MenuControl extends Component {
     public void showBanner() {
         renderer.activityControl.showBanner();
     }
+
     public void hideBanner() {
         renderer.activityControl.hideBanner();
     }

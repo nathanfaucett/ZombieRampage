@@ -7,7 +7,8 @@ public class PointsControl extends Pauseable {
     private int points = 0;
 
 
-    public PointsControl() {}
+    public PointsControl() {
+    }
 
     @Override
     public PointsControl update() {

@@ -9,28 +9,18 @@ import io.faucette.scene_graph.Scene;
 
 
 public class LevelControl extends Component {
-    public static enum State {
-        Wave,
-        Done,
-    }
-
     private GLRenderer renderer;
-
     private int points = 0;
     private int wave = 0;
     private int enemiesOrigTotal = 8;
     private int enemiesTotal = enemiesOrigTotal;
     private int enemiesLeft = enemiesOrigTotal;
-
     private float currentTime = 0f;
     private float rate = 4f;
     private boolean playing;
-
     private float inBetweenTime = 4f;
     private float inBetweenTimeCurrent = 0f;
     private State state;
-
-
     public LevelControl(GLRenderer renderer) {
         super();
         this.renderer = renderer;
@@ -49,6 +39,7 @@ public class LevelControl extends Component {
     public void showBanner() {
         renderer.activityControl.showBanner();
     }
+
     public void hideBanner() {
         renderer.activityControl.hideBanner();
     }
@@ -84,7 +75,7 @@ public class LevelControl extends Component {
 
     public float getDropChance() {
         if (wave > 1) {
-            return 1f / wave;
+            return 1f / (float) (Math.log((double) wave) / Math.log(2f));
         } else {
             return 0.5f;
         }
@@ -176,5 +167,10 @@ public class LevelControl extends Component {
         }
 
         scene.addEntity(entity);
+    }
+
+    public enum State {
+        Wave,
+        Done,
     }
 }
