@@ -18,6 +18,7 @@ public class UIControl extends Component {
     private float screenHeight;
     private boolean hover;
     private boolean lastHover;
+    private boolean needsUpdate;
 
 
     public UIControl() {
@@ -29,15 +30,27 @@ public class UIControl extends Component {
         anchor = Anchor.None;
         hover = false;
         lastHover = false;
+        needsUpdate = false;
     }
 
     public UIControl setAnchor(Anchor anchor) {
         this.anchor = anchor;
+        needsUpdate = true;
         return this;
     }
 
     public UIControl setOffset(Vec2 offset) {
         this.offset = offset;
+        needsUpdate = true;
+        return this;
+    }
+
+    public UIControl forceUpdate() {
+        if (needsUpdate) {
+            InputPlugin input = entity.getScene().getPlugin(InputPlugin.class);
+            updatePosition(input);
+            needsUpdate = false;
+        }
         return this;
     }
 
@@ -96,8 +109,7 @@ public class UIControl extends Component {
 
     @Override
     public UIControl init() {
-        InputPlugin input = entity.getScene().getPlugin(InputPlugin.class);
-        updatePosition(input);
+        forceUpdate();
         return this;
     }
 
@@ -108,7 +120,7 @@ public class UIControl extends Component {
         if (screenWidth != input.getWidth() || screenHeight != input.getHeight()) {
             screenWidth = input.getWidth();
             screenHeight = input.getHeight();
-            updatePosition(input);
+            needsUpdate = true;
         }
 
         UI ui = entity.getComponent(UI.class);
@@ -116,8 +128,10 @@ public class UIControl extends Component {
         if (lastWidth != ui.getWidth() || lastHeight != ui.getHeight()) {
             lastWidth = ui.getWidth();
             lastHeight = ui.getHeight();
-            updatePosition(input);
+            needsUpdate = true;
         }
+
+        forceUpdate();
 
         hover = false;
         for (InputPlugin.Touch touch : input.getTouches()) {

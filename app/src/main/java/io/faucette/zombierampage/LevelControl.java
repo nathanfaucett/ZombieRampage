@@ -12,20 +12,19 @@ public class LevelControl extends Component {
     private GLRenderer renderer;
     private int points = 0;
     private int wave = 0;
-    private int enemiesOrigTotal = 8;
+    private int enemiesOrigTotal = 16;
     private int enemiesTotal = enemiesOrigTotal;
     private int enemiesLeft = enemiesOrigTotal;
     private float currentTime = 0f;
-    private float rate = 4f;
-    private boolean playing;
+    private float rate = 2f;
+    private boolean playing = true;
     private float inBetweenTime = 4f;
     private float inBetweenTimeCurrent = 0f;
-    private State state;
+    private State state = State.Done;
+
     public LevelControl(GLRenderer renderer) {
         super();
         this.renderer = renderer;
-        playing = true;
-        state = State.Done;
     }
 
     public void loadMenu() {
@@ -51,6 +50,7 @@ public class LevelControl extends Component {
         scene.removeEntity(scene.getEntity("right_analog"));
         scene.removeEntity(scene.getEntity("health_ui"));
         scene.removeEntity(scene.getEntity("gun_ui"));
+        scene.removeEntity(scene.getEntity("gun_ui_ammo"));
         showBanner();
         scene.addEntity(UIEntities.createGameOverMenu());
     }

@@ -3,6 +3,7 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion 25
     buildToolsVersion '25.0.0'
+
     defaultConfig {
         applicationId "io.faucette.zombierampage"
         minSdkVersion 15
@@ -10,6 +11,7 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        multiDexEnabled true
     }
     buildTypes {
         release {
@@ -24,8 +26,16 @@ dependencies {
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    compile 'com.android.support:appcompat-v7:25.1.1'
-    compile 'com.google.firebase:firebase-ads:10.0.1'
+
+    compile 'com.android.support:multidex:1.0.1'
+
+    compile 'com.android.support:appcompat-v7:25.3.0'
+    compile 'com.google.firebase:firebase-ads:10.2.0'
+
+    compile 'com.android.support:mediarouter-v7:25.3.0'
+
+    compile 'com.google.android.gms:play-services:10.2.0'
+
     testCompile 'junit:junit:4.12'
 }
 

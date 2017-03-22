@@ -232,9 +232,16 @@ public class GLRendererPlugin extends RendererPlugin {
     public GLRendererPlugin clear() {
         super.clear();
 
+        clearTextures();
+        clearTextTextures();
+
+        return this;
+    }
+
+    public GLRendererPlugin clearTextures() {
         int[] textureHandle = new int[1];
-
         Iterator it = textures.entrySet().iterator();
+
         while (it.hasNext()) {
             Map.Entry pair = (Map.Entry) it.next();
             textureHandle[0] = (Integer) pair.getValue();
@@ -242,13 +249,21 @@ public class GLRendererPlugin extends RendererPlugin {
             it.remove();
         }
 
-        it = textTextures.entrySet().iterator();
+        return this;
+    }
+
+    public GLRendererPlugin clearTextTextures() {
+        int[] textureHandle = new int[1];
+        Iterator it = textTextures.entrySet().iterator();
+
         while (it.hasNext()) {
             Map.Entry pair = (Map.Entry) it.next();
             textureHandle[0] = (Integer) pair.getValue();
             GLES20.glDeleteTextures(1, textureHandle, 0);
             it.remove();
         }
+
+        textBounds.clear();
 
         return this;
     }
@@ -263,6 +278,14 @@ public class GLRendererPlugin extends RendererPlugin {
 
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
         GLES20.glClearColor(background.x, background.y, background.z, background.w);
+
+        return this;
+    }
+
+    @Override
+    public GLRendererPlugin after() {
+
+        clearTextTextures();
 
         return this;
     }

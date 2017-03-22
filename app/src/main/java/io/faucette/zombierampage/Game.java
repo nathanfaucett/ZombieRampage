@@ -71,6 +71,7 @@ public class Game {
     private void addGameUIEntitiesToScene(Scene scene) {
         scene.addEntity(UIEntities.createHealth(hearts));
         scene.addEntity(UIEntities.createGun());
+        scene.addEntity(UIEntities.createGunAmmoCount());
         scene.addEntity(UIEntities.createAnalog(AnalogControl.Side.Left));
         scene.addEntity(UIEntities.createAnalog(AnalogControl.Side.Right));
         scene.addEntity(UIEntities.createPoints());

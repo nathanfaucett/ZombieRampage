@@ -14,7 +14,7 @@ public class LevelGenerator implements Iterable<LevelGenerator.Section> {
 
 
     public LevelGenerator() {
-        increment = 0.25f;
+        increment = 0.5f;
         sections = new HashMap<>();
         generate();
     }

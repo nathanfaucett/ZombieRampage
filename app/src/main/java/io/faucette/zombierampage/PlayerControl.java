@@ -68,7 +68,11 @@ public class PlayerControl extends Pauseable {
     public void getAmmo(GunType gunType) {
         switch (gunType) {
             case Shotgun: {
-                shotgunAmmo += 5 + (int) (Math.random() * 10);
+                shotgunAmmo += 5 + (int) (Math.random() * 5);
+
+                if (this.gunType == GunType.Shotgun) {
+                    this.gunAmmo = shotgunAmmo;
+                }
 
                 if (this.gunType.ordinal() < GunType.Shotgun.ordinal()) {
                     updateGunType(GunType.Shotgun);
@@ -76,7 +80,11 @@ public class PlayerControl extends Pauseable {
                 break;
             }
             case Uzi: {
-                uziAmmo += 10 + (int) (Math.random() * 20);
+                uziAmmo += 10 + (int) (Math.random() * 10);
+
+                if (this.gunType == GunType.Uzi) {
+                    this.gunAmmo = uziAmmo;
+                }
 
                 if (this.gunType.ordinal() < GunType.Uzi.ordinal()) {
                     updateGunType(GunType.Uzi);
@@ -84,7 +92,11 @@ public class PlayerControl extends Pauseable {
                 break;
             }
             case FlameThrower: {
-                flamethrowerAmmo += 20 + (int) (Math.random() * 40);
+                flamethrowerAmmo += 10 + (int) (Math.random() * 10);
+
+                if (this.gunType == GunType.FlameThrower) {
+                    this.gunAmmo = uziAmmo;
+                }
 
                 if (this.gunType.ordinal() < GunType.FlameThrower.ordinal()) {
                     updateGunType(GunType.FlameThrower);
@@ -92,6 +104,10 @@ public class PlayerControl extends Pauseable {
                 break;
             }
         }
+    }
+
+    public int getAmmoCount() {
+        return gunAmmo;
     }
 
     public GunType getGunType() {
@@ -229,7 +245,9 @@ public class PlayerControl extends Pauseable {
         entity.getScene().addEntity(
                 Entities.createFlamethrowerBullet(
                         entity.getComponent(Transform2D.class).getPosition(),
-                        gunDir,
+                        gunDir.transform(
+                                (float) ((Math.PI * -0.03125) + (Math.random() * (Math.PI * 0.0625)))
+                        ),
                         gunSpeed,
                         gunDamage
                 )

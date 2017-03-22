@@ -1,32 +1,19 @@
 package io.faucette.zombierampage;
 
 
+import io.faucette.event_emitter.Emitter;
 import io.faucette.math.Vec2;
 import io.faucette.transform_components.Transform2D;
 import io.faucette.ui_component.UI;
 
 
 public class GunUIControl extends Pauseable {
-    private float screenWidth;
-    private float screenHeight;
-
-    private boolean hover;
-    private boolean lastHover;
 
     public GunUIControl() {
-
         super();
-
-        hover = false;
-        lastHover = false;
     }
 
-    private GunUIControl updatePosition(InputPlugin input) {
-        float size = 128f;
-
-        entity.getComponent(Transform2D.class)
-                .setPosition(new Vec2(input.getWidth() * 0.5f, input.getHeight() - (size * 0.5f)));
-
+    public GunUIControl init() {
         return this;
     }
 
@@ -35,6 +22,7 @@ public class GunUIControl extends Pauseable {
                 .getComponent(PlayerControl.class);
 
         int ordinal = playerControl.getGunType().ordinal() + 1;
+
         if (ordinal >= PlayerControl.GunType.values().length) {
             playerControl.setGunType(PlayerControl.GunType.Pistol);
         } else {
@@ -51,13 +39,6 @@ public class GunUIControl extends Pauseable {
         UI uiComponent = entity.getComponent(UI.class);
 
         switch (playerControl.getGunType()) {
-            case Pistol: {
-                uiComponent
-                        .setWidth(96f)
-                        .setHeight(96f)
-                        .setImage(R.drawable.pistol);
-                break;
-            }
             case Shotgun: {
                 uiComponent
                         .setWidth(192f)
@@ -79,36 +60,15 @@ public class GunUIControl extends Pauseable {
                         .setImage(R.drawable.flamethrower);
                 break;
             }
-        }
-
-        return this;
-    }
-
-    @Override
-    public GunUIControl update() {
-        InputPlugin input = entity.getScene().getPlugin(InputPlugin.class);
-
-        if (screenWidth != input.getWidth() || screenHeight != input.getHeight()) {
-            screenWidth = input.getWidth();
-            screenHeight = input.getHeight();
-            updatePosition(input);
-        }
-
-        if (this.isPaused()) {
-            return this;
-        }
-
-        hover = false;
-        UI ui = entity.getComponent(UI.class);
-        for (InputPlugin.Touch touch : input.getTouches()) {
-            if (ui.contains(touch.position)) {
-                hover = true;
+            case Pistol:
+            default: {
+                uiComponent
+                        .setWidth(96f)
+                        .setHeight(96f)
+                        .setImage(R.drawable.pistol);
+                break;
             }
         }
-        if (lastHover == true && hover == false) {
-            //switchGun();
-        }
-        lastHover = hover;
 
         return this;
     }

@@ -2,6 +2,7 @@ package io.faucette.zombierampage;
 
 import io.faucette.event_emitter.Emitter;
 import io.faucette.math.Vec2;
+import io.faucette.scene_graph.Component;
 import io.faucette.scene_graph.Entity;
 import io.faucette.scene_graph.Scene;
 import io.faucette.transform_components.Transform2D;
@@ -211,10 +212,22 @@ public class UIEntities {
         return new Entity("gun_ui")
                 .addComponent(new GunUIControl())
                 .addComponent(new Transform2D())
+                .addComponent(new UIControl().setAnchor(UIControl.Anchor.CenterBottom))
                 .addComponent(new UI()
                         .setWidth(96f)
                         .setHeight(96f)
                         .setImage(R.drawable.pistol));
+    }
+
+    public static Entity createGunAmmoCount() {
+        return new Entity("gun_ui_ammo")
+                .addComponent(new GunUIAmmoControl())
+                .addComponent(new Transform2D())
+                .addComponent(new UIControl().setAnchor(UIControl.Anchor.CenterBottom))
+                .addComponent(new UI()
+                        .setFontColor(0xFF931C1C)
+                        .setFontSize(24)
+                        .setText("0"));
     }
 
     public static Entity createPoints() {

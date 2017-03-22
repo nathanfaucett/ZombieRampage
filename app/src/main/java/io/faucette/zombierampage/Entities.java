@@ -90,6 +90,8 @@ public class Entities {
 
                                 if (otherEntity.compareTag("enemy")) {
                                     otherEntity.getComponent(StatusControl.class).takeDamage(pp);
+                                    Entity entity = self.getEntity();
+                                    entity.getScene().removeEntity(entity);
                                 } else if (otherEntity.compareTag("tile")) {
                                     Entity entity = self.getEntity();
                                     entity.getScene().removeEntity(entity);
