@@ -31,4 +31,16 @@ public class MenuControl extends Component {
     public void hideBanner() {
         renderer.activityControl.hideBanner();
     }
+
+    public void showLeaderBoard() {
+        renderer.activityControl.showLeaderBoard();
+    }
+
+    public void signIn() {
+        renderer.activityControl.signIn();
+    }
+
+    public void onSignIn(final MainActivity.SignInCallback callback) {
+        renderer.activityControl.onSignIn(callback);
+    }
 }

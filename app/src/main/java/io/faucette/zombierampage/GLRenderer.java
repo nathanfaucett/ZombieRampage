@@ -3,6 +3,7 @@ package io.faucette.zombierampage;
 
 import android.content.Context;
 import android.opengl.GLSurfaceView;
+import android.util.Log;
 
 import javax.microedition.khronos.opengles.GL10;
 
@@ -27,6 +28,10 @@ public class GLRenderer implements GLSurfaceView.Renderer {
         surfaceCreated = false;
     }
 
+    public void init() {
+        game.init();
+    }
+
     public void setScene(Scene s) {
         if (sceneRenderer != null) {
             sceneRenderer.clear();
@@ -48,7 +53,9 @@ public class GLRenderer implements GLSurfaceView.Renderer {
     public void onDrawFrame(GL10 unused) {
         if (surfaceCreated) {
             game.update();
-            sceneRenderer.render();
+            if (sceneRenderer != null) {
+                sceneRenderer.render();
+            }
         }
     }
 

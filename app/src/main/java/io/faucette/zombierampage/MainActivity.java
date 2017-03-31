@@ -25,8 +25,14 @@ import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.games.Games;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 public class MainActivity extends FragmentActivity implements GoogleApiClient.OnConnectionFailedListener {
+    private static final int RC_SIGN_IN = 9001;
+    private static final int REQUEST_LEADERBOARD = 9002;
+
     private GameView gameView;
 
     private AdView adView;
@@ -34,9 +40,14 @@ public class MainActivity extends FragmentActivity implements GoogleApiClient.On
     private GoogleSignInOptions googleSignInOptions;
     private GoogleApiClient googleApiClient;
 
-    private static final int RC_SIGN_IN = 9001;
-    private static final int REQUEST_LEADERBOARD = 9002;
+    private boolean signedIn = false;
+    private boolean firstSignedIn = false;
 
+
+    public static interface SignInCallback {
+        void call(boolean signedIn);
+    }
+    private List<SignInCallback> signInCallbacks = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +61,7 @@ public class MainActivity extends FragmentActivity implements GoogleApiClient.On
 
         googleApiClient = new GoogleApiClient.Builder(this)
                 .enableAutoManage(this, this)
+                .addApi(Games.API)
                 .addApi(Auth.GOOGLE_SIGN_IN_API, googleSignInOptions)
                 .build();
 
@@ -112,6 +124,11 @@ public class MainActivity extends FragmentActivity implements GoogleApiClient.On
                 }
             });
         }
+
+        if (!firstSignedIn) {
+            firstSignedIn = true;
+            gameView.init();
+        }
     }
 
     @Override
@@ -125,9 +142,30 @@ public class MainActivity extends FragmentActivity implements GoogleApiClient.On
         if (result.isSuccess()) {
             GoogleSignInAccount acct = result.getSignInAccount();
             Log.d("MainActivity", "sign in " + acct.getDisplayName());
+
+            signedIn = true;
+
+            for (SignInCallback callback: signInCallbacks) {
+                callback.call(true);
+            }
         } else {
             Log.d("MainActivity", "sign out");
+
+            signedIn = false;
+
+            for (SignInCallback callback: signInCallbacks) {
+                callback.call(false);
+            }
         }
+        signInCallbacks.clear();
+    }
+
+    public boolean isSignedIn() {
+        return signedIn;
+    }
+
+    public void onSignIn(SignInCallback callback) {
+        signInCallbacks.add(callback);
     }
 
     public void signIn() {
@@ -136,6 +174,7 @@ public class MainActivity extends FragmentActivity implements GoogleApiClient.On
     }
 
     public void signOut() {
+        signedIn = false;
         Auth.GoogleSignInApi.signOut(googleApiClient).setResultCallback(
                 new ResultCallback<Status>() {
                     @Override
@@ -146,6 +185,7 @@ public class MainActivity extends FragmentActivity implements GoogleApiClient.On
     }
 
     private void revokeAccess() {
+        signedIn = false;
         Auth.GoogleSignInApi.revokeAccess(googleApiClient).setResultCallback(
                 new ResultCallback<Status>() {
                     @Override

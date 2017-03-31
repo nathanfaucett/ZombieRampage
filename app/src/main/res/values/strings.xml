@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">Zombie Rampage</string>
-    <string name="app_id">791372421318-a1fn2qf1f7j0a1gd57oe8vm1d81ik47u.apps.googleusercontent.com</string>
+    <string name="app_id">626193989092</string>
+    <string name="oauth2_id">626193989092-oljiklm7u0mp5c50u7sdlc7l8fpanm8l.apps.googleusercontent.com</string>
     <string name="banner_ad_unit_id">ca-app-pub-3940256099942544/6300978111</string>
-    <string name="high_score">CgkIxrHji4QXEAIQAg</string>
+    <string name="high_score">CgkI5PvH4JwSEAIQAA</string>
 </resources>

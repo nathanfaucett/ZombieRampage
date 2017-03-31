@@ -1,6 +1,8 @@
 package io.faucette.zombierampage;
 
 
+import android.util.Log;
+
 import java.util.Comparator;
 
 import io.faucette.scene_graph.Entity;
@@ -19,6 +21,9 @@ public class Game {
 
     public Game(GLRenderer renderer) {
         this.renderer = renderer;
+    }
+
+    public void init() {
         loadMenu();
     }
 
@@ -27,7 +32,7 @@ public class Game {
 
         scene.addPlugin(new InputPlugin());
         scene.addEntity(Entities.createMenuCamera());
-        scene.addEntity(UIEntities.createMainMenu());
+        scene.addEntity(UIEntities.createMainMenu(renderer.activityControl.isSignedIn()));
         scene.addEntity(new Entity("menu_control").addComponent(new MenuControl(renderer)));
 
         scene.init();
@@ -95,11 +100,14 @@ public class Game {
             setScene();
         }
 
-        scene.update();
+        if (scene != null) {
 
-        SpriteManager spriteManager = scene.getComponentManager(SpriteManager.class);
-        if (spriteManager != null) {
-            scene.getComponentManager(SpriteManager.class).setDirtyLayer(Entities.LAYER);
+            scene.update();
+
+            SpriteManager spriteManager = scene.getComponentManager(SpriteManager.class);
+            if (spriteManager != null) {
+                scene.getComponentManager(SpriteManager.class).setDirtyLayer(Entities.LAYER);
+            }
         }
     }
 }

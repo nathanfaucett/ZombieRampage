@@ -43,6 +43,10 @@ public class LevelControl extends Component {
         renderer.activityControl.hideBanner();
     }
 
+    public void submitHighScore(int highScore) {
+        renderer.activityControl.submitHighScore(highScore);
+    }
+
     public void gameOver() {
         Scene scene = entity.getScene();
         scene.removeEntity(scene.getEntity("pause_btn_ui"));
