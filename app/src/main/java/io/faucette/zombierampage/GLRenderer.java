@@ -14,11 +14,17 @@ import io.faucette.scene_renderer.SceneRenderer;
 public class GLRenderer implements GLSurfaceView.Renderer {
     public Game game;
     public ActivityControl activityControl;
+
     private float width;
     private float height;
+    private float actualWidth;
+    private float actualHeight;
+
     private boolean surfaceCreated;
     private SceneRenderer sceneRenderer;
     private Context context;
+
+    private float origWidth = 960f;
 
 
     public GLRenderer(Context context, ActivityControl activityControl) {
@@ -65,15 +71,22 @@ public class GLRenderer implements GLSurfaceView.Renderer {
     }
 
     public void onSurfaceChanged(GL10 unused, int width, int height) {
-        this.width = (float) width;
-        this.height = (float) height;
+        float ratio = (float) width / (float) height;
+        float origHeight = origWidth / ratio;
+
+        this.actualWidth = width;
+        this.actualHeight = height;
+
+        this.width = origWidth;
+        this.height = origHeight;
+
         onResize();
     }
 
     public void onResize() {
         if (game.scene != null) {
-            game.scene.getPlugin(InputPlugin.class).setDimensions(width, height);
-            sceneRenderer.getRendererPlugin(GLRendererPlugin.class).set((int) width, (int) height);
+            game.scene.getPlugin(InputPlugin.class).setDimensions(width, height, actualWidth, actualHeight);
+            sceneRenderer.getRendererPlugin(GLRendererPlugin.class).set((int) width, (int) height, (int) actualWidth, (int) actualHeight);
         }
     }
 }

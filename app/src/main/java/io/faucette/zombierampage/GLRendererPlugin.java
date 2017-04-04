@@ -334,7 +334,7 @@ public class GLRendererPlugin extends RendererPlugin {
         return program;
     }
 
-    public void set(int width, int height) {
+    public void set(int width, int height, int actualWidth, int actualHeight) {
         Scene scene = sceneRenderer.getScene();
 
         scene
@@ -350,7 +350,7 @@ public class GLRendererPlugin extends RendererPlugin {
                 .getRenderer(UIGLRenderer.class)
                 .setWidthHeight((float) width, (float) height);
 
-        GLES20.glViewport(0, 0, width, height);
+        GLES20.glViewport(0, 0, actualWidth, actualHeight);
     }
 
     private void loadShaders() {

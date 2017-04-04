@@ -15,6 +15,10 @@ public class InputPlugin extends Plugin {
     private List<Touch> touches;
     private float width;
     private float height;
+    private float actualWidth;
+    private float actualHeight;
+    private float scaleX = 1f;
+    private float scaleY = 1f;
 
     public InputPlugin() {
         super();
@@ -23,6 +27,8 @@ public class InputPlugin extends Plugin {
 
         width = 960f;
         height = 640f;
+        actualWidth = 960f;
+        actualHeight = 640f;
     }
 
     public float getWidth() {
@@ -33,9 +39,14 @@ public class InputPlugin extends Plugin {
         return height;
     }
 
-    public void setDimensions(float width, float height) {
+    public void setDimensions(float width, float height, float actualWidth, float actualHeight) {
         this.width = width;
         this.height = height;
+        this.actualWidth = actualWidth;
+        this.actualHeight = actualHeight;
+
+        scaleX = this.width / this.actualWidth;
+        scaleY = this.height / this.actualHeight;
     }
 
     public Iterable<Touch> getTouches() {
@@ -71,8 +82,8 @@ public class InputPlugin extends Plugin {
     }
 
     private void touchDown(Touch touch, float x, float y) {
-        touch.position.x = x;
-        touch.position.y = y;
+        touch.position.x = x * scaleX;
+        touch.position.y = y * scaleY;
         touch.delta.x = 0f;
         touch.delta.y = 0f;
     }
@@ -84,8 +95,8 @@ public class InputPlugin extends Plugin {
             if (touch != null) {
                 float x = touch.position.x;
                 float y = touch.position.y;
-                touch.position.x = ex;
-                touch.position.y = ey;
+                touch.position.x = ex * scaleX;
+                touch.position.y = ey * scaleY;
                 touch.delta.x = touch.position.x - x;
                 touch.delta.y = touch.position.y - y;
             }

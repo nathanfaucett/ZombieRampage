@@ -19,6 +19,7 @@ public class UIControl extends Component {
     private boolean hover;
     private boolean lastHover;
     private boolean needsUpdate;
+    private boolean isButton;
 
 
     public UIControl() {
@@ -31,6 +32,13 @@ public class UIControl extends Component {
         hover = false;
         lastHover = false;
         needsUpdate = false;
+        isButton = true;
+    }
+
+    public UIControl setIsButton(boolean isButton) {
+        this.isButton = isButton;
+        needsUpdate = true;
+        return this;
     }
 
     public UIControl setAnchor(Anchor anchor) {
@@ -136,12 +144,16 @@ public class UIControl extends Component {
         hover = false;
         for (InputPlugin.Touch touch : input.getTouches()) {
             if (ui.contains(touch.position)) {
-                entity.getComponent(UI.class).setY(0f);
+                if (isButton) {
+                    entity.getComponent(UI.class).setY(0f);
+                }
                 hover = true;
             }
         }
         if (lastHover == true && hover == false) {
-            entity.getComponent(UI.class).setY(0.5f);
+            if (isButton) {
+                entity.getComponent(UI.class).setY(0.5f);
+            }
             emit("touch");
         }
         lastHover = hover;

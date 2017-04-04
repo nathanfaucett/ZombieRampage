@@ -55,12 +55,14 @@ public class UIEntities {
 
                 MenuControl menuControl = scene.getEntity("menu_control").getComponent(MenuControl.class);
                 menuControl.signIn();
+                scene.addEntity(UIEntities.createLoading());
 
                 menuControl.onSignIn(new MainActivity.SignInCallback() {
                     @Override
                     public void call(boolean signedIn) {
                         if (signedIn) {
                             scene.removeEntity(entity);
+                            scene.removeEntity(scene.getEntity("loading_ui"));
                             scene.addEntity(UIEntities.createLeaderboard());
                         }
                     }
@@ -111,6 +113,21 @@ public class UIEntities {
         return new Entity("main_menu_ui")
                 .addChild(UIEntities.createPlay())
                 .addChild(isSignedIn ? UIEntities.createLeaderboard() : UIEntities.createSignIn());
+    }
+
+    public static Entity createLoading() {
+        UIControl uiControl = new UIControl()
+                .setOffset(new Vec2(0f, 0f))
+                .setIsButton(false)
+                .setAnchor(UIControl.Anchor.Center);
+
+        return new Entity("loading_ui")
+                .addComponent(uiControl)
+                .addComponent(new Transform2D())
+                .addComponent(new UI()
+                        .setWidth(512f)
+                        .setHeight(128f)
+                        .setImage(R.drawable.loading));
     }
 
     public static Entity createResume() {

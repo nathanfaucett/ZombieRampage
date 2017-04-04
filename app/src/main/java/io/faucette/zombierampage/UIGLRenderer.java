@@ -27,6 +27,7 @@ public class UIGLRenderer extends Renderer {
     private float[] clippingData = new float[]{0f, 0f, 1f, 1f};
     private float[] sizeData = new float[]{1f, 1f};
 
+    private float origWidth = 960;
     private Context context;
 
 
